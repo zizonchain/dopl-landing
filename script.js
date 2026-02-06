@@ -78,10 +78,17 @@ function initWaitlistForm() {
 
     const input = form.querySelector('.waitlist-input');
     const button = form.querySelector('button');
+    const honeypot = form.querySelector('.honeypot');
     const email = input.value.trim();
 
     // Reset states
     form.classList.remove('success', 'error');
+
+    // Honeypot check - if filled, it's a bot
+    if (honeypot && honeypot.value) {
+      form.classList.add('success');
+      return; // Silently fail for bots
+    }
 
     // Validate
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
@@ -257,6 +264,13 @@ function initHeroCTA() {
     e.preventDefault();
     const email = input.value.trim();
     const submitBtn = form.querySelector('.hero-cta-submit');
+    const honeypot = form.querySelector('.honeypot');
+
+    // Honeypot check - if filled, it's a bot
+    if (honeypot && honeypot.value) {
+      wrap.classList.add('success');
+      return; // Silently fail for bots
+    }
 
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       input.style.borderColor = 'var(--negative)';
