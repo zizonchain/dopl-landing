@@ -181,6 +181,12 @@ function initHeroCardRotation() {
 
   if (!card) return;
 
+  // Preload all images so they're ready for transitions
+  investors.forEach(investor => {
+    const img = new Image();
+    img.src = investor.avatar;
+  });
+
   function updateCard(index) {
     const investor = investors[index];
 
