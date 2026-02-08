@@ -3426,12 +3426,9 @@
       const modal = document.getElementById('close-confirm-modal');
       modal.classList.add('hidden');
       modal.classList.remove('flex');
-      closingStrategy = null;
     }
 
     function confirmClose() {
-      hideCloseConfirm();
-
       // Strategy-specific stats - matching the manage strategies page
       const stats = {
         'Momentum Stocks': { positions: 17, gain: '+$18,420', returnPct: '+727%' },
@@ -3439,6 +3436,9 @@
       };
 
       const strategyStats = stats[closingStrategy] || { positions: 0, gain: '+$0', returnPct: '+0%' };
+
+      // Hide confirm modal first
+      hideCloseConfirm();
 
       // Update success modal
       document.getElementById('close-success-name').textContent = closingStrategy;
