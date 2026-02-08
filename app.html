@@ -892,7 +892,7 @@
               <!-- Active Strategies -->
               <div class="px-6 pt-5 pb-3 flex justify-between items-center">
                 <h2 class="text-sm font-bold text-ink/40 uppercase tracking-wider">Active Strategies</h2>
-                <button class="text-xs font-semibold text-forest">Manage</button>
+                <button onclick="goTo('manage-strategies')" class="text-xs font-semibold text-forest">Manage</button>
               </div>
 
               <!-- Strategy 1 -->
@@ -1764,6 +1764,178 @@
                 <i class="ph ph-compass text-base"></i>
                 Discover More
               </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ========== MANAGE STRATEGIES ========== -->
+        <div id="manage-strategies" class="screen bg-paper text-ink flex-col h-full w-full relative overflow-hidden">
+          <!-- Header -->
+          <div class="pt-14 px-6 pb-4">
+            <div class="flex items-center gap-4 mb-2">
+              <button onclick="goTo('home')" class="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm active:scale-95 transition-transform">
+                <i class="ph ph-arrow-left text-xl text-ink"></i>
+              </button>
+              <h1 class="font-fraunces text-2xl font-semibold text-ink">Manage Strategies</h1>
+            </div>
+            <p class="text-sm text-ink/50 ml-14">View and close your active portfolio positions</p>
+          </div>
+
+          <!-- Main Content -->
+          <div class="flex-1 bg-white rounded-t-3xl overflow-hidden">
+            <div class="h-full overflow-y-auto no-scrollbar pb-10">
+
+              <!-- Strategy 1: Momentum Stocks -->
+              <div class="border-b border-ink/5">
+                <div class="px-6 py-5 flex items-center gap-4 bg-ink/[0.02]">
+                  <img src="images/stocktalk.jpg" class="w-12 h-12 rounded-xl object-cover shadow-sm" alt="StockTalk">
+                  <div class="flex-1">
+                    <h3 class="font-semibold text-ink text-[15px]">Momentum Stocks</h3>
+                    <p class="text-[12px] text-ink/50">by StockTalk · 17 positions</p>
+                  </div>
+                  <div class="text-right">
+                    <p class="font-mono text-sm font-bold text-positive">+$18,420</p>
+                    <p class="text-[11px] text-ink/40">+727%</p>
+                  </div>
+                </div>
+
+                <!-- Positions List -->
+                <div id="momentum-positions" class="px-4">
+                  <div class="flex items-center justify-between py-3 px-2 border-b border-ink/5">
+                    <div class="flex items-center gap-3">
+                      <span class="font-mono text-xs font-bold text-ink bg-ink/5 px-2 py-1 rounded">NBIS</span>
+                      <span class="text-sm text-ink/70">Nebius Group</span>
+                    </div>
+                    <span class="font-mono text-xs font-semibold text-positive">+245%</span>
+                  </div>
+                  <div class="flex items-center justify-between py-3 px-2 border-b border-ink/5">
+                    <div class="flex items-center gap-3">
+                      <span class="font-mono text-xs font-bold text-ink bg-ink/5 px-2 py-1 rounded">KTOS</span>
+                      <span class="text-sm text-ink/70">Kratos Defense</span>
+                    </div>
+                    <span class="font-mono text-xs font-semibold text-positive">+187%</span>
+                  </div>
+                  <div class="flex items-center justify-between py-3 px-2 border-b border-ink/5">
+                    <div class="flex items-center gap-3">
+                      <span class="font-mono text-xs font-bold text-ink bg-ink/5 px-2 py-1 rounded">LEU</span>
+                      <span class="text-sm text-ink/70">Centrus Energy</span>
+                    </div>
+                    <span class="font-mono text-xs font-semibold text-positive">+156%</span>
+                  </div>
+                  <div class="flex items-center justify-between py-3 px-2 border-b border-ink/5">
+                    <div class="flex items-center gap-3">
+                      <span class="font-mono text-xs font-bold text-ink bg-ink/5 px-2 py-1 rounded">HOOD</span>
+                      <span class="text-sm text-ink/70">Robinhood</span>
+                    </div>
+                    <span class="font-mono text-xs font-semibold text-positive">+142%</span>
+                  </div>
+                  <div class="flex items-center justify-between py-3 px-2 border-b border-ink/5">
+                    <div class="flex items-center gap-3">
+                      <span class="font-mono text-xs font-bold text-ink bg-ink/5 px-2 py-1 rounded">TSLA</span>
+                      <span class="text-sm text-ink/70">Tesla Inc</span>
+                    </div>
+                    <span class="font-mono text-xs font-semibold text-positive">+89%</span>
+                  </div>
+                  <div class="py-2 px-2">
+                    <span class="text-xs text-ink/40">+12 more positions</span>
+                  </div>
+                </div>
+
+                <!-- Close All Button -->
+                <div class="px-6 py-4">
+                  <button onclick="showCloseConfirm('Momentum Stocks')" class="w-full py-3 bg-negative/10 text-negative font-semibold text-sm rounded-xl active:scale-[0.98] transition-all">
+                    Close All Positions
+                  </button>
+                </div>
+              </div>
+
+              <!-- Strategy 2: Tut Capital -->
+              <div class="border-b border-ink/5">
+                <div class="px-6 py-5 flex items-center gap-4 bg-ink/[0.02]">
+                  <img src="images/tut.jpg" class="w-12 h-12 rounded-xl object-cover shadow-sm" alt="KingTut">
+                  <div class="flex-1">
+                    <h3 class="font-semibold text-ink text-[15px]">Tut Capital</h3>
+                    <p class="text-[12px] text-ink/50">by KingTut · 6 positions</p>
+                  </div>
+                  <div class="text-right">
+                    <p class="font-mono text-sm font-bold text-positive">+$5,340</p>
+                    <p class="text-[11px] text-ink/40">+112.5%</p>
+                  </div>
+                </div>
+
+                <!-- Positions List -->
+                <div id="tut-positions" class="px-4">
+                  <div class="flex items-center justify-between py-3 px-2 border-b border-ink/5">
+                    <div class="flex items-center gap-3">
+                      <span class="font-mono text-xs font-bold text-ink bg-ink/5 px-2 py-1 rounded">ASTS</span>
+                      <span class="text-sm text-ink/70">AST SpaceMobile</span>
+                    </div>
+                    <span class="font-mono text-xs font-semibold text-positive">+485%</span>
+                  </div>
+                  <div class="flex items-center justify-between py-3 px-2 border-b border-ink/5">
+                    <div class="flex items-center gap-3">
+                      <span class="font-mono text-xs font-bold text-ink bg-ink/5 px-2 py-1 rounded">LUNR</span>
+                      <span class="text-sm text-ink/70">Intuitive Machines</span>
+                    </div>
+                    <span class="font-mono text-xs font-semibold text-positive">+267%</span>
+                  </div>
+                  <div class="flex items-center justify-between py-3 px-2 border-b border-ink/5">
+                    <div class="flex items-center gap-3">
+                      <span class="font-mono text-xs font-bold text-ink bg-ink/5 px-2 py-1 rounded">VELO</span>
+                      <span class="text-sm text-ink/70">Velo3D</span>
+                    </div>
+                    <span class="font-mono text-xs font-semibold text-positive">+156%</span>
+                  </div>
+                  <div class="flex items-center justify-between py-3 px-2 border-b border-ink/5">
+                    <div class="flex items-center gap-3">
+                      <span class="font-mono text-xs font-bold text-ink bg-ink/5 px-2 py-1 rounded">JOBY</span>
+                      <span class="text-sm text-ink/70">Joby Aviation</span>
+                    </div>
+                    <span class="font-mono text-xs font-semibold text-positive">+124%</span>
+                  </div>
+                  <div class="flex items-center justify-between py-3 px-2 border-b border-ink/5">
+                    <div class="flex items-center gap-3">
+                      <span class="font-mono text-xs font-bold text-ink bg-ink/5 px-2 py-1 rounded">AUR</span>
+                      <span class="text-sm text-ink/70">Aurora Innovation</span>
+                    </div>
+                    <span class="font-mono text-xs font-semibold text-positive">+89%</span>
+                  </div>
+                  <div class="flex items-center justify-between py-3 px-2">
+                    <div class="flex items-center gap-3">
+                      <span class="font-mono text-xs font-bold text-ink bg-ink/5 px-2 py-1 rounded">QS</span>
+                      <span class="text-sm text-ink/70">QuantumScape</span>
+                    </div>
+                    <span class="font-mono text-xs font-semibold text-positive">+42%</span>
+                  </div>
+                </div>
+
+                <!-- Close All Button -->
+                <div class="px-6 py-4">
+                  <button onclick="showCloseConfirm('Tut Capital')" class="w-full py-3 bg-negative/10 text-negative font-semibold text-sm rounded-xl active:scale-[0.98] transition-all">
+                    Close All Positions
+                  </button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Close Confirmation Modal -->
+          <div id="close-confirm-modal" class="fixed inset-0 bg-ink/50 backdrop-blur-sm z-50 hidden items-center justify-center p-6">
+            <div class="bg-white rounded-3xl p-6 w-full max-w-sm shadow-2xl">
+              <div class="w-14 h-14 bg-negative/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <i class="ph ph-warning text-3xl text-negative"></i>
+              </div>
+              <h3 class="font-fraunces text-xl font-semibold text-ink text-center mb-2">Close All Positions?</h3>
+              <p id="close-confirm-text" class="text-sm text-ink/60 text-center mb-6">This will sell all holdings in <strong>Momentum Stocks</strong> at market price.</p>
+              <div class="space-y-3">
+                <button onclick="confirmClose()" class="w-full py-3.5 bg-negative text-white font-semibold rounded-xl active:scale-[0.98] transition-all">
+                  Yes, Close All
+                </button>
+                <button onclick="hideCloseConfirm()" class="w-full py-3.5 bg-ink/5 text-ink font-semibold rounded-xl active:scale-[0.98] transition-all">
+                  Cancel
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -3201,6 +3373,33 @@
         const previousScreen = navigationHistory[navigationHistory.length - 1];
         goTo(previousScreen, { replace: true });
       }
+    }
+
+    // Manage Strategies - Close confirmation
+    let closingStrategy = null;
+
+    function showCloseConfirm(strategyName) {
+      closingStrategy = strategyName;
+      const modal = document.getElementById('close-confirm-modal');
+      const text = document.getElementById('close-confirm-text');
+      text.innerHTML = `This will sell all holdings in <strong>${strategyName}</strong> at market price.`;
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function hideCloseConfirm() {
+      const modal = document.getElementById('close-confirm-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+      closingStrategy = null;
+    }
+
+    function confirmClose() {
+      // Simulate closing positions
+      hideCloseConfirm();
+      // Show success feedback
+      alert(`All positions in ${closingStrategy} have been closed.`);
+      goTo('home');
     }
 
     function simulateLogin() {
