@@ -1687,13 +1687,16 @@
               </div>
             </div>
 
-            <!-- Fixed Bottom CTA -->
-            <div class="px-6 py-5 border-t border-ink/5">
-              <button onclick="goTo('home')" class="w-full bg-forest text-paper py-4 rounded-xl font-fraunces text-lg font-semibold shadow-lg hover:bg-forest/90 active:scale-[0.98] transition-all">
+            <!-- Fixed Bottom Links -->
+            <div class="px-6 py-6 border-t border-ink/5 flex justify-center gap-6">
+              <button onclick="goTo('home')" class="text-forest font-semibold text-sm active:scale-[0.98] transition-all flex items-center gap-1.5">
+                <i class="ph-fill ph-house text-base"></i>
                 View Dashboard
               </button>
-              <button onclick="goTo('discover')" class="w-full text-ink/60 font-semibold text-sm py-3 mt-2 active:scale-[0.98] transition-all">
-                Discover More Portfolios
+              <span class="text-ink/20">|</span>
+              <button onclick="goTo('discover')" class="text-ink/50 font-semibold text-sm active:scale-[0.98] transition-all flex items-center gap-1.5">
+                <i class="ph ph-compass text-base"></i>
+                Discover More
               </button>
             </div>
           </div>
@@ -3234,6 +3237,14 @@
     }
 
     function confirmCopyStrategy() {
+      // Get the investment amount from the input field
+      const inputVal = document.getElementById('investmentAmountInput').value.replace(/,/g, '');
+      const amount = parseFloat(inputVal) || 2500;
+
+      // Update the success screen with the values
+      document.getElementById('csuccess-amount').textContent = '$' + amount.toLocaleString('en-US');
+      document.getElementById('csuccess-stoploss').textContent = stopLossPercent > 0 ? stopLossPercent + '%' : 'None';
+
       goTo('copy-success');
     }
 
