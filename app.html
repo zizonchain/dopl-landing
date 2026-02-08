@@ -1959,12 +1959,12 @@
                   <span id="close-success-positions" class="font-mono text-sm font-semibold text-ink">17</span>
                 </div>
                 <div class="flex justify-between items-center py-2 border-b border-ink/5">
-                  <span class="text-sm text-ink/60">Total Proceeds</span>
-                  <span id="close-success-proceeds" class="font-mono text-sm font-semibold text-ink">$20,920</span>
+                  <span class="text-sm text-ink/60">Total Profit</span>
+                  <span id="close-success-gain" class="font-mono text-sm font-bold text-positive">+$18,420</span>
                 </div>
                 <div class="flex justify-between items-center py-2">
-                  <span class="text-sm text-ink/60">Total Gain</span>
-                  <span id="close-success-gain" class="font-mono text-sm font-bold text-positive">+$18,420</span>
+                  <span class="text-sm text-ink/60">Return</span>
+                  <span id="close-success-return" class="font-mono text-sm font-bold text-positive">+727%</span>
                 </div>
               </div>
 
@@ -3432,19 +3432,19 @@
     function confirmClose() {
       hideCloseConfirm();
 
-      // Strategy-specific stats
+      // Strategy-specific stats - matching the manage strategies page
       const stats = {
-        'Momentum Stocks': { positions: 17, proceeds: '$20,920', gain: '+$18,420' },
-        'Tut Capital': { positions: 6, proceeds: '$10,140', gain: '+$5,340' }
+        'Momentum Stocks': { positions: 17, gain: '+$18,420', returnPct: '+727%' },
+        'Tut Capital': { positions: 6, gain: '+$5,340', returnPct: '+112.5%' }
       };
 
-      const strategyStats = stats[closingStrategy] || { positions: 0, proceeds: '$0', gain: '+$0' };
+      const strategyStats = stats[closingStrategy] || { positions: 0, gain: '+$0', returnPct: '+0%' };
 
       // Update success modal
       document.getElementById('close-success-name').textContent = closingStrategy;
       document.getElementById('close-success-positions').textContent = strategyStats.positions;
-      document.getElementById('close-success-proceeds').textContent = strategyStats.proceeds;
       document.getElementById('close-success-gain').textContent = strategyStats.gain;
+      document.getElementById('close-success-return').textContent = strategyStats.returnPct;
 
       // Show success modal
       const successModal = document.getElementById('close-success-modal');
