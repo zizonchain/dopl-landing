@@ -1938,6 +1938,41 @@
               </div>
             </div>
           </div>
+
+          <!-- Close Success Modal -->
+          <div id="close-success-modal" class="fixed inset-0 bg-ink/50 backdrop-blur-sm z-50 hidden items-center justify-center p-6">
+            <div class="bg-white rounded-3xl p-6 w-full max-w-sm shadow-2xl">
+              <!-- Success Checkmark -->
+              <div class="w-16 h-16 bg-positive/10 rounded-full flex items-center justify-center mx-auto mb-5">
+                <svg class="w-8 h-8 text-positive" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </div>
+
+              <h3 class="font-fraunces text-xl font-semibold text-ink text-center mb-1">Positions Closed</h3>
+              <p id="close-success-name" class="text-sm text-ink/50 text-center mb-5">Momentum Stocks</p>
+
+              <!-- Stats Summary -->
+              <div class="bg-ink/[0.03] rounded-2xl p-4 mb-5">
+                <div class="flex justify-between items-center py-2 border-b border-ink/5">
+                  <span class="text-sm text-ink/60">Positions Sold</span>
+                  <span id="close-success-positions" class="font-mono text-sm font-semibold text-ink">17</span>
+                </div>
+                <div class="flex justify-between items-center py-2 border-b border-ink/5">
+                  <span class="text-sm text-ink/60">Total Proceeds</span>
+                  <span id="close-success-proceeds" class="font-mono text-sm font-semibold text-ink">$20,920</span>
+                </div>
+                <div class="flex justify-between items-center py-2">
+                  <span class="text-sm text-ink/60">Total Gain</span>
+                  <span id="close-success-gain" class="font-mono text-sm font-bold text-positive">+$18,420</span>
+                </div>
+              </div>
+
+              <button onclick="closeSuccessAndGoHome()" class="w-full py-3.5 bg-forest text-paper font-semibold rounded-xl active:scale-[0.98] transition-all">
+                Back to Home
+              </button>
+            </div>
+          </div>
         </div>
 
         <!-- ========== ACTIVITY FEED ========== -->
@@ -3395,10 +3430,33 @@
     }
 
     function confirmClose() {
-      // Simulate closing positions
       hideCloseConfirm();
-      // Show success feedback
-      alert(`All positions in ${closingStrategy} have been closed.`);
+
+      // Strategy-specific stats
+      const stats = {
+        'Momentum Stocks': { positions: 17, proceeds: '$20,920', gain: '+$18,420' },
+        'Tut Capital': { positions: 6, proceeds: '$10,140', gain: '+$5,340' }
+      };
+
+      const strategyStats = stats[closingStrategy] || { positions: 0, proceeds: '$0', gain: '+$0' };
+
+      // Update success modal
+      document.getElementById('close-success-name').textContent = closingStrategy;
+      document.getElementById('close-success-positions').textContent = strategyStats.positions;
+      document.getElementById('close-success-proceeds').textContent = strategyStats.proceeds;
+      document.getElementById('close-success-gain').textContent = strategyStats.gain;
+
+      // Show success modal
+      const successModal = document.getElementById('close-success-modal');
+      successModal.classList.remove('hidden');
+      successModal.classList.add('flex');
+    }
+
+    function closeSuccessAndGoHome() {
+      const successModal = document.getElementById('close-success-modal');
+      successModal.classList.add('hidden');
+      successModal.classList.remove('flex');
+      closingStrategy = null;
       goTo('home');
     }
 
