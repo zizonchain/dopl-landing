@@ -800,41 +800,34 @@
         </div>
 
         <!-- ========== HOME ========== -->
-        <div id="home" class="screen bg-transparent text-ink flex-col h-full w-full relative overflow-hidden">
-          <!-- Top Section: Header & Equity -->
-          <div class="pt-14 px-6 pb-4">
-            <!-- Header -->
-            <div class="flex justify-between items-center mb-5">
+        <div id="home" class="screen bg-forest text-ink flex-col h-full w-full relative overflow-hidden">
+          <!-- Dark Header Section -->
+          <div class="pt-14 px-6 pb-8 bg-forest">
+            <!-- Top Bar -->
+            <div class="flex justify-between items-center mb-8">
               <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-full overflow-hidden border-2 border-forest/20">
+                <div class="w-10 h-10 rounded-full overflow-hidden border-2 border-white/20">
                   <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&h=100" alt="Profile" class="w-full h-full object-cover">
                 </div>
                 <div>
-                  <p class="text-[10px] text-ink/40 font-bold uppercase tracking-widest leading-none mb-1">Welcome back</p>
-                  <h1 class="font-fraunces text-lg font-semibold text-ink leading-none">Ahmed</h1>
+                  <p class="text-[11px] text-white/50 font-medium">Welcome back</p>
+                  <h1 class="font-fraunces text-base font-semibold text-white leading-none">Ahmed</h1>
                 </div>
               </div>
-              <button class="w-10 h-10 flex items-center justify-center bg-white rounded-full border border-ink/5 relative">
-                <i class="ph ph-bell text-lg text-ink"></i>
-                <span class="absolute top-2 right-2 w-2 h-2 bg-negative rounded-full border-2 border-white"></span>
+              <button class="w-10 h-10 flex items-center justify-center bg-white/10 rounded-full relative">
+                <i class="ph ph-bell text-lg text-white"></i>
+                <span class="absolute top-2 right-2 w-2 h-2 bg-positive rounded-full border-2 border-forest"></span>
               </button>
             </div>
 
-            <!-- Equity Card -->
-            <div class="bg-forest text-paper rounded-2xl p-5 relative overflow-hidden">
-              <div class="flex justify-between items-start mb-4">
-                <div>
-                  <p class="text-[10px] text-white/50 font-bold uppercase tracking-wider mb-1">Total Equity</p>
-                  <h2 class="font-fraunces text-[32px] font-semibold tracking-tight leading-none">$47,283<span class="text-lg text-white/40">.52</span></h2>
-                </div>
-                <div class="bg-positive/20 text-positive px-2.5 py-1 rounded-lg flex items-center gap-1">
-                  <i class="ph-fill ph-trend-up text-sm"></i>
-                  <span class="font-mono text-xs font-bold">+2.4%</span>
-                </div>
-              </div>
-              <div class="flex items-center gap-2 text-white/60 text-xs">
-                <span class="font-mono text-positive font-semibold">+$342.18</span>
-                <span>today</span>
+            <!-- Big Balance -->
+            <div class="text-center">
+              <p class="text-white/50 text-xs font-medium mb-2">Total Portfolio Value</p>
+              <h2 class="font-fraunces text-[44px] font-semibold text-white tracking-tight leading-none mb-3">$47,283</h2>
+              <div class="inline-flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full">
+                <i class="ph-fill ph-trend-up text-positive"></i>
+                <span class="font-mono text-sm font-semibold text-positive">+$342.18</span>
+                <span class="text-white/40 text-sm">(+2.4%)</span>
               </div>
             </div>
           </div>
