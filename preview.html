@@ -1,0 +1,3343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>dopl. - Preview</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            paper: '#F3EFE8',
+            ink: '#0D261F',
+            forest: '#1A3C33',
+            clay: '#C9A690',
+            stone: '#D0DCD9',
+            highlight: '#D4E157',
+            positive: '#2E7D32',
+            negative: '#D64045',
+            gold: '#D4AF37',
+            silver: '#A8A8A8',
+            bronze: '#AD8A56',
+          },
+          fontFamily: {
+            fraunces: ['Fraunces', 'serif'],
+            inter: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+        }
+      }
+    }
+  </script>
+  <style>
+    * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; }
+    body {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      background: #F3EFE8;
+      background-image:
+        radial-gradient(at 0% 0%, rgba(26, 60, 51, 0.08) 0, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(46, 125, 50, 0.05) 0, transparent 50%);
+    }
+
+    /* Animations */
+    @keyframes pulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes scaleIn {
+      0% { transform: scale(0.5); opacity: 0; }
+      60% { transform: scale(1.1); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    @keyframes strokeDraw {
+      0% { stroke-dashoffset: 60; opacity: 0; }
+      100% { stroke-dashoffset: 0; opacity: 1; }
+    }
+    @keyframes lineGrow {
+      0% { height: 0; opacity: 0; }
+      100% { height: 32px; opacity: 1; }
+    }
+    @keyframes pulseSoft {
+      0%, 100% { box-shadow: 0 0 0 0px rgba(42, 56, 46, 0.1); }
+      50% { box-shadow: 0 0 0 15px rgba(42, 56, 46, 0); }
+    }
+    @keyframes bounceIn {
+      0% { transform: scale(0.3); opacity: 0; }
+      50% { transform: scale(1.05); opacity: 1; }
+      70% { transform: scale(0.9); }
+      100% { transform: scale(1); }
+    }
+    @keyframes drawCheck {
+      to { stroke-dashoffset: 0; }
+    }
+    @keyframes confettiFall {
+      0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(800px) rotate(720deg); opacity: 0; }
+    }
+    .animate-bounce-in { animation: bounceIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+    .check-draw { stroke-dasharray: 100; stroke-dashoffset: 100; animation: drawCheck 0.4s ease-out 0.5s forwards; }
+    .confetti { animation: confettiFall 3s linear infinite; }
+
+    .pulse-dot { animation: pulse 2s ease-in-out infinite; }
+    .animate-up { animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; }
+    .animate-slide-up { animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; }
+    .animate-scale-in { animation: scaleIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    .animate-line-grow { animation: lineGrow 0.4s ease-out 0.5s forwards; opacity: 0; }
+    .checkmark-path { stroke-dasharray: 60; stroke-dashoffset: 60; animation: strokeDraw 0.6s ease-out 0.3s forwards; }
+
+    /* Screen transition animations */
+    @keyframes screenSlideIn {
+      from { opacity: 0; transform: translateX(30px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes screenSlideOut {
+      from { opacity: 1; transform: translateX(0); }
+      to { opacity: 0; transform: translateX(-30px); }
+    }
+    @keyframes screenFadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    .screen {
+      display: none;
+      opacity: 0;
+    }
+    .screen.active {
+      display: flex;
+      opacity: 1;
+      animation: screenFadeIn 0.25s ease-out;
+    }
+
+    /* Splash screen loader */
+    @keyframes dash {
+      0% {
+        stroke-dashoffset: 80;
+        transform: rotate(0deg);
+      }
+      50% {
+        stroke-dashoffset: 20;
+        transform: rotate(180deg);
+      }
+      100% {
+        stroke-dashoffset: 80;
+        transform: rotate(360deg);
+      }
+    }
+    .loader-ring {
+      stroke-dasharray: 80;
+      stroke-dashoffset: 80;
+      animation: dash 2s ease-in-out infinite;
+      transform-origin: center;
+    }
+    .splash-logo {
+      font-variation-settings: 'opsz' 144, 'wght' 400;
+      letter-spacing: -0.01em;
+    }
+
+    /* Loading spinner */
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    .spinner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    /* Skeleton loading */
+    @keyframes shimmer {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+    .skeleton {
+      background: linear-gradient(90deg, rgba(0,0,0,0.06) 25%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.06) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: 8px;
+    }
+
+    /* Ripple effect for buttons */
+    .ripple {
+      position: relative;
+      overflow: hidden;
+    }
+    .ripple::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at var(--x, 50%) var(--y, 50%), rgba(255,255,255,0.3) 0%, transparent 60%);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .ripple:active::after {
+      opacity: 1;
+    }
+    .pulse-ring { animation: pulseSoft 3s infinite ease-in-out; }
+
+    .delay-100 { animation-delay: 100ms; }
+    .delay-200 { animation-delay: 200ms; }
+    .delay-300 { animation-delay: 300ms; }
+    .delay-400 { animation-delay: 400ms; }
+    .delay-500 { animation-delay: 500ms; }
+    .delay-600 { animation-delay: 600ms; }
+
+    .screen { display: none; }
+    .screen.active { display: flex; }
+
+    /* Glass morphism */
+    .glass {
+      background: rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    .glass-strong {
+      background: rgba(255, 255, 255, 0.4);
+      backdrop-filter: blur(30px) saturate(180%);
+      -webkit-backdrop-filter: blur(30px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+    }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 0 8px 32px rgba(13, 38, 31, 0.1);
+    }
+
+    /* Hide scrollbar */
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    /* Screen transitions */
+    .screen { transition: opacity 0.3s ease, transform 0.3s ease; }
+
+    svg { stroke: currentColor; fill: none; stroke-width: 2; }
+
+    /* ===== MOBILE RESPONSIVE STYLES ===== */
+
+    /* Mobile: Full screen, no frame - detect by screen width OR touch device */
+    @media (max-width: 500px), (hover: none) and (pointer: coarse) and (max-width: 900px) {
+      body {
+        background: #F3EFE8 !important;
+      }
+      .phone-wrapper {
+        padding: 0 !important;
+        min-height: 100vh !important;
+        min-height: 100dvh !important;
+        background: #F3EFE8 !important;
+      }
+      .phone-frame-outer {
+        width: 100% !important;
+        height: 100vh !important;
+        height: 100dvh !important;
+        border-radius: 0 !important;
+        padding: 0 !important;
+        background: #F3EFE8 !important;
+        box-shadow: none !important;
+      }
+      .dynamic-island { display: none !important; }
+      .home-indicator { display: none !important; }
+      .phone-screen {
+        border-radius: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+      }
+      /* Safe area insets for notched devices */
+      .screen > div:first-child {
+        padding-top: max(48px, env(safe-area-inset-top, 48px)) !important;
+      }
+      nav {
+        padding-bottom: max(24px, env(safe-area-inset-bottom, 24px)) !important;
+      }
+    }
+
+    /* Tablet/Small desktop: Slightly smaller frame */
+    @media (min-width: 501px) and (max-width: 900px) and (hover: hover) {
+      .phone-wrapper { padding: 16px; }
+      .phone-frame-outer { transform: scale(0.9); transform-origin: center; }
+    }
+
+    /* Touch feedback for mobile */
+    @media (hover: none) and (pointer: coarse) {
+      button:active, [onclick]:active {
+        transform: scale(0.97);
+        opacity: 0.9;
+      }
+    }
+    /* Mobile mode - applied via JS to html element */
+    .is-mobile .phone-wrapper {
+      padding: 0 !important;
+    }
+    .is-mobile .phone-frame-outer {
+      width: 100% !important;
+      height: 100vh !important;
+      height: 100dvh !important;
+      border-radius: 0 !important;
+      padding: 0 !important;
+      background: transparent !important;
+      box-shadow: none !important;
+    }
+    .is-mobile .dynamic-island,
+    .is-mobile .home-indicator {
+      display: none !important;
+    }
+    .is-mobile .phone-screen {
+      border-radius: 0 !important;
+    }
+    .is-mobile .screen > div:first-child {
+      padding-top: max(48px, env(safe-area-inset-top, 48px)) !important;
+    }
+    .is-mobile nav {
+      padding-bottom: max(24px, env(safe-area-inset-bottom, 24px)) !important;
+    }
+
+    /* ===== MICRO-INTERACTIONS ===== */
+
+    /* Card press effect */
+    .card-press {
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .card-press:active {
+      transform: scale(0.98);
+      box-shadow: 0 4px 16px rgba(13, 38, 31, 0.08);
+    }
+
+    /* Button press with haptic feel */
+    .btn-press {
+      transition: transform 0.1s ease, opacity 0.1s ease;
+    }
+    .btn-press:active {
+      transform: scale(0.96);
+      opacity: 0.9;
+    }
+
+    /* Nav item transition */
+    .nav-item {
+      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), color 0.2s ease;
+    }
+    .nav-item:active {
+      transform: scale(0.92);
+    }
+
+    /* Icon bounce on tap */
+    @keyframes iconBounce {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.15); }
+      100% { transform: scale(1); }
+    }
+    .icon-bounce:active i {
+      animation: iconBounce 0.3s ease;
+    }
+
+    /* Smooth toggle switch */
+    .toggle-switch {
+      transition: background-color 0.25s ease;
+    }
+    .toggle-knob {
+      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    /* ===== PULL TO REFRESH ===== */
+
+    @keyframes pullRotate {
+      to { transform: rotate(360deg); }
+    }
+
+    .pull-indicator {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%) translateY(-60px);
+      transition: transform 0.3s ease, opacity 0.3s ease;
+      opacity: 0;
+      z-index: 100;
+    }
+    .pull-indicator.visible {
+      opacity: 1;
+      transform: translateX(-50%) translateY(20px);
+    }
+    .pull-indicator.refreshing .pull-spinner {
+      animation: pullRotate 0.8s linear infinite;
+    }
+    .pull-spinner {
+      width: 28px;
+      height: 28px;
+      border: 2.5px solid rgba(13, 38, 31, 0.15);
+      border-top-color: #1A3C33;
+      border-radius: 50%;
+      transition: transform 0.2s ease;
+    }
+
+    /* ===== ENHANCED SKELETON STATES ===== */
+
+    .skeleton-text {
+      height: 14px;
+      border-radius: 7px;
+    }
+    .skeleton-text-sm {
+      height: 10px;
+      border-radius: 5px;
+    }
+    .skeleton-text-lg {
+      height: 20px;
+      border-radius: 10px;
+    }
+    .skeleton-avatar {
+      border-radius: 50%;
+    }
+    .skeleton-card {
+      border-radius: 20px;
+    }
+    .skeleton-button {
+      border-radius: 16px;
+      height: 48px;
+    }
+
+    /* Staggered skeleton animation */
+    .skeleton-stagger > *:nth-child(1) { animation-delay: 0ms; }
+    .skeleton-stagger > *:nth-child(2) { animation-delay: 100ms; }
+    .skeleton-stagger > *:nth-child(3) { animation-delay: 200ms; }
+    .skeleton-stagger > *:nth-child(4) { animation-delay: 300ms; }
+    .skeleton-stagger > *:nth-child(5) { animation-delay: 400ms; }
+
+    /* ===== EMPTY STATE STYLES ===== */
+
+    @keyframes emptyFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+    .empty-icon {
+      animation: emptyFloat 3s ease-in-out infinite;
+    }
+
+    /* Content fade in after load */
+    @keyframes contentFadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .content-loaded {
+      animation: contentFadeIn 0.4s ease-out forwards;
+    }
+    .content-loaded:nth-child(1) { animation-delay: 0ms; }
+    .content-loaded:nth-child(2) { animation-delay: 80ms; }
+    .content-loaded:nth-child(3) { animation-delay: 160ms; }
+    .content-loaded:nth-child(4) { animation-delay: 240ms; }
+  </style>
+  <script>
+    // Detect mobile and add class to html immediately (before body exists)
+    (function() {
+      var isMobile = /iPhone|iPad|iPod|Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+        || (window.innerWidth <= 500)
+        || ('ontouchstart' in window && window.innerWidth <= 900);
+      if (isMobile) {
+        document.documentElement.classList.add('is-mobile');
+      }
+    })();
+  </script>
+</head>
+<body>
+  <!-- Responsive Phone Container -->
+  <div class="phone-wrapper min-h-screen w-full flex items-center justify-center p-4">
+    <div class="phone-frame-outer relative w-[393px] h-[852px] bg-ink rounded-[55px] p-[14px] shadow-2xl">
+      <!-- Dynamic Island (hidden on mobile) -->
+      <div class="dynamic-island absolute top-[18px] left-1/2 -translate-x-1/2 w-[126px] h-[37px] bg-black rounded-full z-50"></div>
+
+      <!-- Screen Container -->
+      <div id="app" class="phone-screen w-full h-full bg-paper rounded-[41px] overflow-hidden relative"
+           style="background-image: radial-gradient(at 0% 0%, rgba(26, 60, 51, 0.08) 0, transparent 50%), radial-gradient(at 100% 100%, rgba(46, 125, 50, 0.05) 0, transparent 50%);">
+
+        <!-- ========== SPLASH SCREEN ========== -->
+        <div id="splash" class="screen active bg-transparent text-ink flex-col h-full w-full relative overflow-hidden">
+          <div class="flex-1 flex flex-col items-center justify-center px-6">
+            <!-- Logo -->
+            <div id="splash-logo" class="relative mb-12" style="opacity: 0; transform: translateY(15px); transition: all 1.4s cubic-bezier(0.16, 1, 0.3, 1);">
+              <h1 class="splash-logo font-fraunces text-7xl text-ink leading-none">dopl.</h1>
+            </div>
+          </div>
+
+          <!-- Loader -->
+          <div id="splash-loader" class="absolute bottom-24 left-1/2 transform -translate-x-1/2 flex flex-col items-center gap-4" style="opacity: 0; transition: opacity 1s ease;">
+            <svg class="w-5 h-5 text-ink transform -rotate-90" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1" fill="none" class="opacity-10"></circle>
+              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1" fill="none" class="loader-ring"></circle>
+            </svg>
+          </div>
+
+          <!-- Version -->
+          <div class="absolute bottom-8 text-center w-full opacity-30">
+            <p class="font-mono text-[10px] tracking-widest uppercase text-ink">v 1.0.0</p>
+          </div>
+        </div>
+
+        <!-- ========== WELCOME SCREEN 1 ========== -->
+        <div id="welcome1" class="screen bg-transparent text-ink flex-col h-full w-full relative overflow-hidden">
+          <div class="absolute top-0 left-0 w-full pt-16 px-6 flex justify-end z-20 animate-slide-up">
+            <button onclick="goTo('home')" class="text-clay font-inter text-base font-medium hover:text-ink transition-colors duration-300">Skip</button>
+          </div>
+
+          <main class="flex-1 flex flex-col items-center justify-center px-6 pt-20 pb-4">
+            <div class="w-full max-w-[280px] aspect-square mb-8 animate-slide-up delay-100">
+              <svg viewBox="0 0 320 320" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
+                <defs>
+                  <filter id="cardShadow" x="-20%" y="-10%" width="140%" height="140%">
+                    <feDropShadow dx="0" dy="8" stdDeviation="12" flood-opacity="0.12"/>
+                  </filter>
+                </defs>
+                <circle cx="160" cy="160" r="140" fill="#D0DCD9" fill-opacity="0.2"/>
+                <circle cx="160" cy="160" r="100" fill="#D0DCD9" fill-opacity="0.1"/>
+                <g filter="url(#cardShadow)">
+                  <rect x="32" y="80" width="110" height="160" rx="16" fill="#1A3C33"/>
+                  <circle cx="87" cy="120" r="24" fill="#F3EFE8" fill-opacity="0.15"/>
+                  <circle cx="87" cy="120" r="16" fill="#C9A690"/>
+                  <rect x="52" y="156" width="70" height="8" rx="4" fill="#F3EFE8" fill-opacity="0.3"/>
+                  <rect x="62" y="170" width="50" height="6" rx="3" fill="#F3EFE8" fill-opacity="0.15"/>
+                  <path d="M52 210 L68 200 L84 208 L100 190 L116 198 L122 185" stroke="#D4E157" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                  <circle cx="122" cy="92" r="10" fill="#D4E157"/>
+                  <path d="M118 92 L121 95 L127 89" stroke="#1A3C33" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </g>
+                <circle cx="156" cy="160" r="3" fill="#C9A690" class="pulse-dot"/>
+                <circle cx="164" cy="160" r="3" fill="#C9A690" class="pulse-dot" style="animation-delay: 0.5s"/>
+                <g filter="url(#cardShadow)">
+                  <rect x="178" y="80" width="110" height="160" rx="16" fill="#F3EFE8" stroke="#0D261F" stroke-width="1"/>
+                  <circle cx="233" cy="120" r="24" fill="#1A3C33" fill-opacity="0.08"/>
+                  <circle cx="233" cy="120" r="16" fill="#D0DCD9"/>
+                  <text x="233" y="125" text-anchor="middle" fill="#0D261F" font-size="14" font-family="Inter" font-weight="500">You</text>
+                  <rect x="198" y="156" width="70" height="8" rx="4" fill="#0D261F" fill-opacity="0.15"/>
+                  <rect x="208" y="170" width="50" height="6" rx="3" fill="#0D261F" fill-opacity="0.08"/>
+                  <path d="M198 210 L214 200 L230 208 L246 190 L262 198 L268 185" stroke="#2E7D32" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                  <circle cx="268" cy="92" r="10" fill="#2E7D32"/>
+                  <path d="M264 92 L267 95 L273 89" stroke="#F3EFE8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </g>
+              </svg>
+            </div>
+
+            <div class="space-y-4 text-center max-w-[320px]">
+              <h1 class="font-fraunces text-[32px] leading-[1.15] font-semibold tracking-tight text-ink animate-slide-up delay-200">Mirror the best portfolios.</h1>
+              <p class="font-inter text-[17px] leading-[1.5] text-ink/70 animate-slide-up delay-300">Copy top investors automatically. Your money stays in your brokerage.</p>
+            </div>
+          </main>
+
+          <div class="w-full px-6 pb-12 pt-6 flex flex-col items-center gap-8 animate-slide-up delay-400">
+            <div class="flex items-center gap-2.5">
+              <div class="w-2 h-2 rounded-full bg-ink"></div>
+              <div class="w-2 h-2 rounded-full border border-ink/30"></div>
+              <div class="w-2 h-2 rounded-full border border-ink/30"></div>
+            </div>
+            <button onclick="goTo('welcome2')" class="w-full bg-ink text-paper font-inter font-semibold text-base py-4 rounded-2xl active:scale-[0.98] transform transition-all duration-150 shadow-lg">Get Started</button>
+          </div>
+        </div>
+
+        <!-- ========== WELCOME SCREEN 2 ========== -->
+        <div id="welcome2" class="screen bg-transparent text-ink flex-col h-full w-full relative overflow-hidden">
+          <header class="absolute top-0 w-full px-6 pt-14 z-20 flex justify-end animate-slide-up">
+            <button onclick="goTo('home')" class="text-clay text-base font-medium hover:text-ink transition-colors duration-300">Skip</button>
+          </header>
+
+          <main class="flex-1 flex flex-col w-full px-6 pt-36">
+            <h1 class="font-fraunces text-[36px] leading-[1.1] text-ink mb-12 animate-slide-up delay-100">How it works</h1>
+
+            <div class="flex flex-col gap-10">
+              <div class="flex items-center gap-5 animate-slide-up delay-200">
+                <div class="flex-shrink-0 w-[56px] flex items-center justify-center text-forest">
+                  <i class="ph-light ph-link text-[48px]"></i>
+                </div>
+                <p class="text-[19px] font-medium text-ink leading-snug">Connect your brokerage</p>
+              </div>
+              <div class="flex items-center gap-5 animate-slide-up delay-300">
+                <div class="flex-shrink-0 w-[56px] flex items-center justify-center text-forest">
+                  <i class="ph-light ph-user text-[48px]"></i>
+                </div>
+                <p class="text-[19px] font-medium text-ink leading-snug">Follow top traders</p>
+              </div>
+              <div class="flex items-center gap-5 animate-slide-up delay-400">
+                <div class="flex-shrink-0 w-[56px] flex items-center justify-center text-forest">
+                  <i class="ph-light ph-lightning text-[48px]"></i>
+                </div>
+                <p class="text-[19px] font-medium text-ink leading-snug">Trades copy automatically</p>
+              </div>
+            </div>
+          </main>
+
+          <footer class="w-full px-6 pb-12 pt-6 flex flex-col items-center z-10 animate-slide-up delay-400">
+            <div class="flex items-center gap-2 mb-8">
+              <div class="w-2 h-2 rounded-full border border-ink/30"></div>
+              <div class="w-2 h-2 rounded-full bg-ink"></div>
+            </div>
+            <button onclick="goTo('signup')" class="w-full bg-ink text-paper font-medium text-[17px] h-[56px] rounded-2xl flex items-center justify-center shadow-lg active:scale-[0.99] transition-all">Create Account</button>
+          </footer>
+        </div>
+
+        <!-- ========== SIGN UP SCREEN ========== -->
+        <div id="signup" class="screen bg-transparent text-ink flex-col h-full w-full relative overflow-hidden">
+          <div class="w-full px-6 pt-14 pb-2 flex justify-between items-center text-sm font-medium z-10">
+            <span class="text-ink">9:41</span>
+            <div class="flex items-center gap-2 text-ink">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 256 256">
+                <path fill="currentColor" d="M168,40H56A16,16,0,0,0,40,56v48H200V56A16,16,0,0,0,168,40Zm-16,40H72V64h80Zm48,40H40v64a16,16,0,0,0,16,16H168a16,16,0,0,0,16-16V120Zm32-8v48a8,8,0,0,1-8,8h-8V104h8A8,8,0,0,1,232,112Z"></path>
+              </svg>
+            </div>
+          </div>
+
+          <div class="flex-1 flex flex-col px-6">
+            <div class="pt-2 pb-8">
+              <button onclick="goTo('signup')" class="text-ink p-1 -ml-1 hover:opacity-70 transition-opacity">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+              </button>
+              <h1 class="font-fraunces text-[32px] leading-tight text-ink mt-6 font-medium">Create your account</h1>
+            </div>
+
+            <div class="flex flex-col gap-3">
+              <button onclick="simulateLogin()" class="w-full bg-ink text-paper rounded-2xl py-4 px-4 flex items-center justify-center gap-3 active:scale-[0.99] transition-all">
+                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                  <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
+                </svg>
+                <span class="font-semibold text-base">Sign in with Apple</span>
+              </button>
+
+              <button onclick="simulateLogin()" class="w-full glass text-ink rounded-2xl py-4 px-4 flex items-center justify-center gap-3 active:scale-[0.99] transition-all">
+                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="none">
+                  <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"></path>
+                  <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"></path>
+                  <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.21.81-.62z" fill="#FBBC05"></path>
+                  <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"></path>
+                </svg>
+                <span class="font-semibold text-base">Sign in with Google</span>
+              </button>
+            </div>
+
+            <div class="flex items-center gap-4 py-8">
+              <div class="h-px bg-ink/15 flex-1"></div>
+              <span class="text-clay text-sm font-medium">or</span>
+              <div class="h-px bg-ink/15 flex-1"></div>
+            </div>
+
+            <form class="flex flex-col gap-4" onsubmit="event.preventDefault(); simulateLogin();">
+              <input type="email" placeholder="Email" class="w-full glass rounded-xl px-4 py-4 text-ink placeholder:text-clay/60 focus:outline-none focus:ring-2 focus:ring-ink/20 transition-all text-base">
+              <input type="password" placeholder="Password" class="w-full glass rounded-xl px-4 py-4 text-ink placeholder:text-clay/60 focus:outline-none focus:ring-2 focus:ring-ink/20 transition-all text-base">
+              <button type="submit" class="mt-4 w-full bg-ink text-paper font-semibold text-base rounded-2xl py-4 shadow-lg active:scale-[0.99] transition-all">Continue</button>
+            </form>
+          </div>
+
+          <div class="w-full px-6 pb-8 pt-4 flex flex-col items-center gap-6 mt-auto">
+            <p class="text-[15px] text-ink">Already have an account? <button class="font-semibold underline">Log in</button></p>
+            <p class="text-xs text-center text-clay max-w-[280px] leading-relaxed">By continuing, you agree to our Terms of Service and Privacy Policy</p>
+          </div>
+        </div>
+
+        <!-- ========== RISK DISCLOSURE ========== -->
+        <div id="risk" class="screen bg-transparent text-ink flex-col h-full w-full relative overflow-hidden">
+          <div class="w-full px-6 pt-14 pb-2 flex justify-between items-center text-sm font-medium">
+            <span class="text-ink">9:41</span>
+            <div class="flex items-center gap-2 text-ink">
+              <svg width="24" height="12" viewBox="0 0 24 12" fill="none"><rect x="0.5" y="0.5" width="20" height="11" rx="2.5" stroke="currentColor"></rect><rect x="2.5" y="2.5" width="16" height="7" rx="1.5" fill="currentColor"></rect></svg>
+            </div>
+          </div>
+
+          <header class="px-6 pt-4 pb-4 flex flex-col gap-6 shrink-0 z-10">
+            <button onclick="goTo('signup')" class="w-10 h-10 -ml-2 flex items-center justify-center glass rounded-xl">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0D261F" stroke-width="2">
+                <path d="M19 12H5M5 12L12 19M5 12L12 5"/>
+              </svg>
+            </button>
+            <h1 class="font-fraunces text-[32px] leading-[1.1] font-normal text-ink">Important<br/>Disclosure</h1>
+          </header>
+
+          <main class="flex-1 flex flex-col px-6 pb-6 overflow-hidden">
+            <div class="flex-1 glass-card rounded-2xl overflow-hidden flex flex-col relative">
+              <div class="overflow-y-auto no-scrollbar p-6 flex flex-col gap-6 h-full">
+                <div>
+                  <h2 class="font-semibold text-[17px] mb-4 text-ink">Risk Warning</h2>
+                  <ul class="space-y-4 text-[15px] leading-[1.6] text-ink/90">
+                    <li class="flex gap-3"><span class="mt-2 w-1.5 h-1.5 rounded-full bg-ink shrink-0"></span><span>Past performance does not guarantee future results.</span></li>
+                    <li class="flex gap-3"><span class="mt-2 w-1.5 h-1.5 rounded-full bg-ink shrink-0"></span><span>Copy trading involves significant risk. You may lose some or all of your invested capital.</span></li>
+                    <li class="flex gap-3"><span class="mt-2 w-1.5 h-1.5 rounded-full bg-ink shrink-0"></span><span>The information provided is not financial advice.</span></li>
+                    <li class="flex gap-3"><span class="mt-2 w-1.5 h-1.5 rounded-full bg-ink shrink-0"></span><span>Copied trades may not be suitable for your financial situation or risk tolerance.</span></li>
+                  </ul>
+                </div>
+                <div class="pt-4 border-t border-ink/10">
+                  <p class="text-[13px] leading-relaxed text-clay">dopl. Financial Services is regulated by ADGM. By proceeding, you acknowledge that you have read and understood our Risk Disclosure Statement.</p>
+                </div>
+              </div>
+              <div class="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-white/25 to-transparent pointer-events-none"></div>
+            </div>
+          </main>
+
+          <footer class="px-6 pb-12 pt-2 shrink-0 z-10 flex flex-col gap-6">
+            <label id="riskCheckbox" class="flex items-center gap-4 cursor-pointer group" onclick="toggleRiskCheckbox()">
+              <div id="riskCheckboxBox" class="w-6 h-6 rounded-md border-2 border-ink flex items-center justify-center transition-all group-active:scale-95">
+              </div>
+              <span class="text-[15px] text-ink font-normal">I understand and accept these risks</span>
+            </label>
+            <button id="riskContinueBtn" disabled onclick="goTo('brokerage')" class="w-full py-4 px-6 rounded-2xl font-medium text-base flex items-center justify-center transition-all text-clay/60 bg-ink/20 cursor-not-allowed">Continue</button>
+          </footer>
+        </div>
+
+        <!-- ========== CONNECT BROKERAGE ========== -->
+        <div id="brokerage" class="screen bg-transparent text-ink flex-col h-full w-full relative overflow-hidden">
+          <div class="w-full px-6 pt-14 pb-2 flex justify-between items-center text-sm font-medium">
+            <span class="text-ink">9:41</span>
+            <div class="flex items-center gap-2 text-ink">
+              <svg width="24" height="12" viewBox="0 0 24 12" fill="none"><rect x="0.5" y="0.5" width="20" height="11" rx="2.5" stroke="currentColor"></rect><rect x="2.5" y="2.5" width="16" height="7" rx="1.5" fill="currentColor"></rect></svg>
+            </div>
+          </div>
+
+          <header class="px-6 pt-4 pb-8">
+            <button onclick="goTo('risk')" class="mb-8 w-10 h-10 flex items-center justify-center -ml-2 glass rounded-xl">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5"></path><path d="M12 19l-7-7 7-7"></path></svg>
+            </button>
+            <h1 class="font-fraunces text-[32px] leading-[1.1] text-ink mb-3 tracking-tight">Connect your brokerage</h1>
+            <div class="flex items-start gap-2 text-clay">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="mt-0.5 shrink-0"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+              <p class="text-[15px] leading-snug font-medium">We never access your password or move your funds</p>
+            </div>
+          </header>
+
+          <div class="px-6 flex-1 overflow-y-auto no-scrollbar pb-8">
+            <div class="grid grid-cols-2 gap-3">
+              <button onclick="goTo('success')" class="glass-card aspect-[10/9] rounded-2xl p-5 flex flex-col items-center justify-center gap-3 active:scale-[0.98] transition-all">
+                <div class="w-14 h-14 rounded-2xl overflow-hidden flex items-center justify-center">
+                  <img src="../copilot-landing/images/interactive brokers .png" alt="IBKR" class="w-20 h-20 object-contain scale-150">
+                </div>
+                <span class="font-medium text-[14px] text-ink text-center leading-tight">Interactive Brokers</span>
+              </button>
+              <button onclick="goTo('success')" class="glass-card aspect-[10/9] rounded-2xl p-5 flex flex-col items-center justify-center gap-3 active:scale-[0.98] transition-all">
+                <div class="w-14 h-14 rounded-2xl overflow-hidden flex items-center justify-center">
+                  <img src="../copilot-landing/images/sarwa.png" alt="Sarwa" class="w-full h-full object-contain">
+                </div>
+                <span class="font-medium text-[14px] text-ink text-center leading-tight">Sarwa</span>
+              </button>
+              <button onclick="goTo('success')" class="glass-card aspect-[10/9] rounded-2xl p-5 flex flex-col items-center justify-center gap-3 active:scale-[0.98] transition-all">
+                <div class="w-14 h-14 rounded-2xl bg-[#1a1f71] flex items-center justify-center">
+                  <span class="font-bold text-[11px] text-white tracking-tight">ENBD</span>
+                </div>
+                <span class="font-medium text-[14px] text-ink text-center leading-tight">Emirates NBD</span>
+              </button>
+              <div class="glass aspect-[10/9] rounded-2xl p-5 flex flex-col items-center justify-center gap-3 opacity-50">
+                <div class="w-14 h-14 rounded-2xl border-2 border-dashed border-clay/40 flex items-center justify-center">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="text-clay/60"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                </div>
+                <span class="font-medium text-[14px] text-ink/40 text-center leading-tight">More soon</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="px-6 pb-12 pt-4 shrink-0 flex justify-center z-10 bg-gradient-to-t from-paper via-paper/80 to-transparent">
+            <button onclick="goTo('home')" class="text-clay font-medium text-base underline decoration-2 underline-offset-4 decoration-clay/30 hover:decoration-clay transition-all">I'll do this later</button>
+          </div>
+        </div>
+
+        <!-- ========== CONNECTION SUCCESS ========== -->
+        <div id="success" class="screen bg-transparent text-ink flex-col h-full w-full relative overflow-hidden">
+          <div class="w-full px-6 pt-14 pb-2 flex justify-between items-center text-sm font-medium z-50">
+            <span class="text-ink">9:41</span>
+            <div class="flex items-center gap-2 text-ink">
+              <svg width="24" height="12" viewBox="0 0 24 12" fill="none"><rect x="0.5" y="0.5" width="20" height="11" rx="2.5" stroke="currentColor"></rect><rect x="2.5" y="2.5" width="16" height="7" rx="1.5" fill="currentColor"></rect></svg>
+            </div>
+          </div>
+
+          <main class="flex-1 flex flex-col items-center justify-center px-6 -mt-8 w-full max-w-md mx-auto">
+            <div class="relative flex flex-col items-center mb-10">
+              <div class="w-24 h-24 rounded-full bg-forest flex items-center justify-center shadow-xl relative z-20 animate-scale-in pulse-ring">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="stroke: #F3EFE8 !important;">
+                  <path class="checkmark-path" d="M20 6L9 17L4 12" style="stroke: #F3EFE8 !important;"></path>
+                </svg>
+              </div>
+              <div class="w-[2px] bg-clay/30 animate-line-grow origin-top relative z-10"></div>
+              <div class="w-14 h-14 glass-card rounded-2xl flex items-center justify-center relative z-20 animate-slide-up delay-200">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0D261F" stroke-width="1.5"><path d="M3 21h18"></path><path d="M5 21V7"></path><path d="M19 21V7"></path><path d="M4 7h16"></path><path d="M12 2L4 7h16z"></path></svg>
+                <div class="absolute -bottom-1 -right-1 w-5 h-5 bg-forest rounded-full border-2 border-paper flex items-center justify-center">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="4"><path d="M20 6L9 17L4 12"></path></svg>
+                </div>
+              </div>
+            </div>
+
+            <div class="text-center animate-slide-up delay-300 relative z-10">
+              <h1 class="font-fraunces text-[34px] leading-tight font-semibold text-ink tracking-tight mb-3">Connected!</h1>
+              <p class="font-inter text-clay/90 text-[15px] leading-relaxed max-w-[280px] mx-auto">Your brokerage account has been successfully linked and is ready for trading.</p>
+            </div>
+
+            <div class="mt-10 w-full animate-slide-up delay-400 relative z-10">
+              <div class="flex flex-col items-center">
+                <span class="font-mono text-[10px] font-bold tracking-[0.15em] text-clay uppercase mb-1">Account Balance</span>
+                <div class="flex items-start gap-1 font-fraunces text-ink mb-3">
+                  <span class="text-[28px] mt-1.5 font-medium opacity-60">$</span>
+                  <span class="text-[48px] font-bold tracking-tight">12,450.00</span>
+                </div>
+                <div class="inline-flex items-center gap-2 px-3 py-1.5 glass rounded-full">
+                  <div class="w-1.5 h-1.5 rounded-full bg-forest animate-pulse"></div>
+                  <span class="text-[11px] font-semibold text-forest/80 tracking-wide uppercase">Live Updates Active</span>
+                </div>
+              </div>
+            </div>
+          </main>
+
+          <div class="w-full px-6 pb-10 pt-4 z-20 animate-slide-up delay-500">
+            <button onclick="goTo('home')" class="w-full h-[58px] bg-ink text-paper rounded-2xl font-medium text-[17px] flex items-center justify-center gap-2 shadow-lg active:scale-[0.98] transition-all group">
+              <span>Start Exploring</span>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="group-hover:translate-x-1 transition-transform"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
+            </button>
+            <button class="w-full mt-5 text-sm font-medium text-ink/50 hover:text-ink transition-colors">View Account Details</button>
+          </div>
+        </div>
+
+        <!-- ========== HOME ========== -->
+        <div id="home" class="screen bg-transparent text-ink flex-col h-full w-full relative overflow-hidden">
+          <!-- Header -->
+          <header class="px-6 pt-16 pb-4 flex justify-between items-center z-20 flex-none">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 rounded-full border border-white/30 overflow-hidden glass">
+                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&h=100" alt="Profile" class="w-full h-full object-cover">
+              </div>
+              <div>
+                <p class="text-[10px] text-clay font-bold uppercase tracking-widest leading-none mb-1">Portfolio</p>
+                <h1 class="font-fraunces text-base font-semibold text-ink leading-none">Ahmed Al-Rashid</h1>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <button class="w-9 h-9 flex items-center justify-center glass rounded-full"><i class="ph ph-magnifying-glass text-lg text-ink"></i></button>
+              <button class="w-9 h-9 flex items-center justify-center glass rounded-full relative">
+                <i class="ph ph-bell text-lg text-ink"></i>
+                <span class="absolute top-2.5 right-2.5 w-1.5 h-1.5 bg-negative rounded-full border border-paper"></span>
+              </button>
+            </div>
+          </header>
+
+          <!-- Main Content -->
+          <main id="home-main" class="flex-1 overflow-y-auto no-scrollbar pb-28 relative">
+            <!-- Pull to Refresh Indicator -->
+            <div id="home-pull-indicator" class="pull-indicator">
+              <div class="pull-spinner"></div>
+            </div>
+
+            <!-- Equity Card -->
+            <section class="px-6 mb-6">
+              <div class="bg-forest text-paper rounded-[2rem] p-6 relative overflow-hidden card-press">
+                <div class="relative z-10">
+                  <div class="flex justify-between items-start">
+                    <div>
+                      <span class="font-mono text-[10px] text-white/50 uppercase tracking-widest">Total Equity</span>
+                      <h2 class="font-fraunces text-[38px] font-medium tracking-tight mt-1 mb-2 leading-none">$47,283<span class="text-xl text-white/40">.52</span></h2>
+                      <div class="flex items-center gap-2">
+                        <span class="font-mono text-xs font-semibold text-positive">+$342.18</span>
+                        <span class="text-white/30 text-[10px] font-medium tracking-wide">TODAY</span>
+                      </div>
+                    </div>
+                    <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center"><i class="ph ph-dots-three-outline-fill text-white/60 text-sm"></i></div>
+                  </div>
+                  <div class="h-20 mt-4 mb-6">
+                    <svg class="w-full h-full" preserveAspectRatio="none" viewBox="0 0 400 80">
+                      <path d="M0,60 C50,60 80,45 120,50 C160,55 200,30 240,40 C280,50 320,25 400,35" fill="none" stroke="#C9A690" stroke-width="2" stroke-linecap="round"></path>
+                    </svg>
+                  </div>
+                  <div class="flex p-1 rounded-xl bg-white/10 max-w-sm mx-auto">
+                    <button class="flex-1 py-1.5 rounded-lg text-[10px] font-bold text-white/50">1D</button>
+                    <button class="flex-1 py-1.5 rounded-lg text-[10px] font-bold text-white/50">1W</button>
+                    <button class="flex-1 py-1.5 rounded-lg text-[10px] font-bold bg-white/20 text-white shadow-sm">1M</button>
+                    <button class="flex-1 py-1.5 rounded-lg text-[10px] font-bold text-white/50">3M</button>
+                    <button class="flex-1 py-1.5 rounded-lg text-[10px] font-bold text-white/50">ALL</button>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- Active Strategies -->
+            <section class="mb-8">
+              <div class="flex justify-between items-center px-6 mb-4">
+                <h3 class="font-fraunces text-lg text-ink font-semibold">Active Strategies</h3>
+                <button class="text-[10px] font-bold text-clay uppercase tracking-wider">Manage</button>
+              </div>
+              <div class="space-y-3 px-6">
+                <div onclick="selectFund('momentum-stocks')" class="glass-card rounded-2xl p-4 flex flex-col cursor-pointer card-press">
+                  <div class="flex items-center gap-3 mb-3">
+                    <img src="../copilot-landing/images/stocktalk.jpg" class="w-8 h-8 rounded-full object-cover" alt="StockTalk">
+                    <div class="flex-1">
+                      <p class="font-inter font-bold text-ink text-sm">Momentum Stocks</p>
+                      <p class="text-[10px] text-clay/70">by StockTalk</p>
+                    </div>
+                  </div>
+                  <div class="grid grid-cols-2 gap-2">
+                    <div><p class="text-[8px] uppercase text-clay/60 font-bold mb-1">Return</p><p class="font-mono text-lg font-medium text-forest">+727%</p></div>
+                    <div><p class="text-[8px] uppercase text-clay/60 font-bold mb-1">PnL</p><p class="font-mono text-lg font-medium text-ink">+$18.4k</p></div>
+                  </div>
+                </div>
+                <div onclick="selectFund('tut-capital')" class="glass-card rounded-2xl p-4 flex flex-col cursor-pointer card-press">
+                  <div class="flex items-center gap-3 mb-3">
+                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=64&auto=format&fit=crop" class="w-8 h-8 rounded-full object-cover" alt="KingTut">
+                    <div class="flex-1">
+                      <p class="font-inter font-bold text-ink text-sm">Tut Capital</p>
+                      <p class="text-[10px] text-clay/70">by KingTut</p>
+                    </div>
+                  </div>
+                  <div class="grid grid-cols-2 gap-2">
+                    <div><p class="text-[8px] uppercase text-clay/60 font-bold mb-1">Return</p><p class="font-mono text-lg font-medium text-forest">+112.5%</p></div>
+                    <div><p class="text-[8px] uppercase text-clay/60 font-bold mb-1">PnL</p><p class="font-mono text-lg font-medium text-ink">+$5.3k</p></div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- Activity -->
+            <section class="px-6">
+              <h3 class="font-fraunces text-lg text-ink font-semibold mb-4">Recent Activity</h3>
+              <div class="space-y-3">
+                <div onclick="goTo('trade-detail')" class="glass-card p-3.5 rounded-xl flex items-center justify-between cursor-pointer card-press">
+                  <div class="flex items-center gap-3">
+                    <div class="w-2 h-2 rounded-full bg-forest"></div>
+                    <div>
+                      <p class="text-sm font-bold text-ink">AAPL <span class="font-normal text-ink/40 ml-1">Buy</span></p>
+                      <p class="text-[10px] text-clay font-medium">via Sarah Chen</p>
+                    </div>
+                  </div>
+                  <div class="text-right">
+                    <p class="font-mono text-xs font-bold text-ink">10 Units</p>
+                    <p class="text-[9px] text-clay/60 uppercase">14:32</p>
+                  </div>
+                </div>
+                <div onclick="goTo('trade-detail')" class="glass-card p-3.5 rounded-xl flex items-center justify-between cursor-pointer card-press">
+                  <div class="flex items-center gap-3">
+                    <div class="w-2 h-2 rounded-full bg-negative"></div>
+                    <div>
+                      <p class="text-sm font-bold text-ink">BTC <span class="font-normal text-ink/40 ml-1">Sell</span></p>
+                      <p class="text-[10px] text-clay font-medium">via Marcus Bell</p>
+                    </div>
+                  </div>
+                  <div class="text-right">
+                    <p class="font-mono text-xs font-bold text-ink">0.5 Units</p>
+                    <p class="text-[9px] text-clay/60 uppercase">12:15</p>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </main>
+
+          <!-- Bottom Nav -->
+          <nav class="absolute bottom-4 left-4 right-4 glass-strong rounded-[26px] flex justify-around py-2.5 z-50 shadow-lg">
+            <button onclick="goTo('home')" class="flex flex-col items-center gap-0.5 text-[10px] text-ink nav-item">
+              <div class="w-10 h-10 flex items-center justify-center rounded-2xl bg-ink text-paper shadow-md"><i class="ph-fill ph-house text-xl"></i></div>
+              <span class="font-medium">Home</span>
+            </button>
+            <button onclick="goTo('discover')" class="flex flex-col items-center gap-0.5 text-[10px] text-ink/40 nav-item">
+              <div class="w-10 h-10 flex items-center justify-center rounded-2xl"><i class="ph ph-compass text-xl"></i></div>
+              <span>Discover</span>
+            </button>
+            <button onclick="goTo('leaderboard')" class="flex flex-col items-center gap-0.5 text-[10px] text-ink/40 nav-item">
+              <div class="w-10 h-10 flex items-center justify-center rounded-2xl"><i class="ph ph-ranking text-xl"></i></div>
+              <span>Leaderboard</span>
+            </button>
+            <button onclick="goTo('profile')" class="flex flex-col items-center gap-0.5 text-[10px] text-ink/40 nav-item">
+              <div class="w-10 h-10 flex items-center justify-center rounded-2xl"><i class="ph ph-user text-xl"></i></div>
+              <span>Profile</span>
+            </button>
+          </nav>
+        </div>
+
+        <!-- ========== DISCOVER ========== -->
+        <div id="discover" class="screen bg-transparent text-ink flex-col h-full w-full relative overflow-hidden">
+          <!-- Top Section: Header -->
+          <div class="pt-16 px-6 pb-4">
+            <h1 class="text-3xl font-fraunces text-ink tracking-tight font-semibold mb-4">Discover</h1>
+            <!-- Search Bar -->
+            <div class="flex gap-3">
+              <input type="text" class="flex-1 glass py-3 px-4 font-inter text-sm text-ink rounded-2xl outline-none placeholder:text-ink/40" placeholder="Search creators...">
+              <button class="w-12 h-12 flex items-center justify-center glass rounded-2xl active:scale-95 transition-transform">
+                <i class="ph ph-sliders-horizontal text-xl text-ink"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Bottom Section: All Portfolios (full-bleed white background) -->
+          <div class="flex-1 bg-white rounded-t-3xl overflow-hidden flex flex-col">
+            <div class="px-6 pt-5 pb-3">
+              <h2 class="text-sm font-bold text-ink/40 uppercase tracking-wider">All Portfolios</h2>
+            </div>
+
+            <div class="flex-1 overflow-y-auto no-scrollbar pb-28">
+              <!-- Fund - Momentum Stocks -->
+              <div onclick="selectFund('momentum-stocks')" class="px-6 py-4 flex items-center gap-4 cursor-pointer active:bg-ink/5 transition-all">
+                <img src="../copilot-landing/images/stocktalk.jpg" class="w-11 h-11 rounded-xl object-cover" alt="">
+                <div class="flex-1 min-w-0">
+                  <h3 class="font-semibold text-ink text-[15px] truncate">Momentum Stocks</h3>
+                  <p class="text-[12px] text-ink/50">by StockTalk</p>
+                </div>
+                <div class="text-right">
+                  <p class="font-mono text-sm font-bold text-positive">+727%</p>
+                </div>
+              </div>
+
+              <div class="h-px bg-ink/5 mx-6"></div>
+
+              <!-- Fund - Energy Basket -->
+              <div onclick="selectFund('energy-basket')" class="px-6 py-4 flex items-center gap-4 cursor-pointer active:bg-ink/5 transition-all">
+                <img src="../copilot-landing/images/stocktalk.jpg" class="w-11 h-11 rounded-xl object-cover" alt="">
+                <div class="flex-1 min-w-0">
+                  <h3 class="font-semibold text-ink text-[15px] truncate">Energy Basket</h3>
+                  <p class="text-[12px] text-ink/50">by StockTalk</p>
+                </div>
+                <div class="text-right">
+                  <p class="font-mono text-sm font-bold text-positive">+48.3%</p>
+                </div>
+              </div>
+
+              <div class="h-px bg-ink/5 mx-6"></div>
+
+              <!-- Fund - Tut Capital -->
+              <div onclick="selectFund('tut-capital')" class="px-6 py-4 flex items-center gap-4 cursor-pointer active:bg-ink/5 transition-all">
+                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=64&auto=format&fit=crop" class="w-11 h-11 rounded-xl object-cover" alt="">
+                <div class="flex-1 min-w-0">
+                  <h3 class="font-semibold text-ink text-[15px] truncate">Tut Capital</h3>
+                  <p class="text-[12px] text-ink/50">by KingTut</p>
+                </div>
+                <div class="text-right">
+                  <p class="font-mono text-sm font-bold text-positive">+112.5%</p>
+                </div>
+              </div>
+
+              <div class="h-px bg-ink/5 mx-6"></div>
+
+              <!-- Fund - Photon Capital -->
+              <div onclick="selectFund('photon-capital')" class="px-6 py-4 flex items-center gap-4 cursor-pointer active:bg-ink/5 transition-all">
+                <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=64&auto=format&fit=crop" class="w-11 h-11 rounded-xl object-cover" alt="">
+                <div class="flex-1 min-w-0">
+                  <h3 class="font-semibold text-ink text-[15px] truncate">Photon Capital</h3>
+                  <p class="text-[12px] text-ink/50">by Marcus Webb</p>
+                </div>
+                <div class="text-right">
+                  <p class="font-mono text-sm font-bold text-positive">+89.4%</p>
+                </div>
+              </div>
+
+              <div class="h-px bg-ink/5 mx-6"></div>
+
+              <!-- Fund - Nancy Pelosi Tracker -->
+              <div onclick="selectFund('nancy-pelosi')" class="px-6 py-4 flex items-center gap-4 cursor-pointer active:bg-ink/5 transition-all">
+                <div class="w-11 h-11 rounded-xl bg-forest flex items-center justify-center">
+                  <span class="text-paper font-fraunces font-semibold text-sm">dopl.</span>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <h3 class="font-semibold text-ink text-[15px] truncate">Nancy Pelosi Tracker</h3>
+                  <p class="text-[12px] text-ink/50">by dopl.</p>
+                </div>
+                <div class="text-right">
+                  <p class="font-mono text-sm font-bold text-positive">+65.2%</p>
+                </div>
+              </div>
+
+              <div class="h-px bg-ink/5 mx-6"></div>
+
+              <!-- Fund - Michael Burry Tracker -->
+              <div onclick="selectFund('michael-burry')" class="px-6 py-4 flex items-center gap-4 cursor-pointer active:bg-ink/5 transition-all">
+                <div class="w-11 h-11 rounded-xl bg-forest flex items-center justify-center">
+                  <span class="text-paper font-fraunces font-semibold text-sm">dopl.</span>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <h3 class="font-semibold text-ink text-[15px] truncate">Michael Burry Tracker</h3>
+                  <p class="text-[12px] text-ink/50">by dopl.</p>
+                </div>
+                <div class="text-right">
+                  <p class="font-mono text-sm font-bold text-positive">+38.7%</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom Nav -->
+          <nav class="absolute bottom-4 left-4 right-4 glass-strong rounded-[26px] flex justify-around py-2.5 z-50 shadow-lg">
+            <button onclick="goTo('home')" class="flex flex-col items-center gap-0.5 text-[10px] text-ink/40 nav-item">
+              <div class="w-10 h-10 flex items-center justify-center rounded-2xl"><i class="ph ph-house text-xl"></i></div>
+              <span>Home</span>
+            </button>
+            <button onclick="goTo('discover')" class="flex flex-col items-center gap-0.5 text-[10px] text-ink nav-item">
+              <div class="w-10 h-10 flex items-center justify-center rounded-2xl bg-ink text-paper shadow-md"><i class="ph-fill ph-compass text-xl"></i></div>
+              <span class="font-medium">Discover</span>
+            </button>
+            <button onclick="goTo('leaderboard')" class="flex flex-col items-center gap-0.5 text-[10px] text-ink/40 nav-item">
+              <div class="w-10 h-10 flex items-center justify-center rounded-2xl"><i class="ph ph-ranking text-xl"></i></div>
+              <span>Leaderboard</span>
+            </button>
+            <button onclick="goTo('profile')" class="flex flex-col items-center gap-0.5 text-[10px] text-ink/40 nav-item">
+              <div class="w-10 h-10 flex items-center justify-center rounded-2xl"><i class="ph ph-user text-xl"></i></div>
+              <span>Profile</span>
+            </button>
+          </nav>
+        </div>
+
+        <!-- ========== LEADERBOARD ========== -->
+        <div id="leaderboard" class="screen bg-transparent text-ink flex-col h-full w-full relative overflow-hidden">
+          <header class="pt-16 px-6 pb-4 flex items-center justify-between">
+            <button onclick="goTo('home')" class="w-10 h-10 flex items-center justify-center glass rounded-xl">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"></path></svg>
+            </button>
+            <h1 class="text-xl font-fraunces font-semibold">Global Rankings</h1>
+            <div class="w-10"></div>
+          </header>
+
+          <!-- Metric Toggles -->
+          <div class="flex bg-ink/5 mx-6 p-1 rounded-xl gap-1">
+            <button class="flex-1 py-2 rounded-lg text-xs font-semibold bg-white text-ink shadow-sm">Returns</button>
+            <button class="flex-1 py-2 rounded-lg text-xs font-semibold text-ink/60">Consistency</button>
+            <button class="flex-1 py-2 rounded-lg text-xs font-semibold text-ink/60">Followers</button>
+          </div>
+
+          <!-- Time Filters -->
+          <div class="flex justify-center gap-5 py-4">
+            <span class="text-xs font-bold text-ink/40 cursor-pointer">1M</span>
+            <span class="text-xs font-bold text-ink/40 cursor-pointer">3M</span>
+            <span class="text-xs font-bold text-ink cursor-pointer relative pb-1"><span class="absolute bottom-0 left-0 right-0 h-0.5 bg-ink rounded"></span>YTD</span>
+            <span class="text-xs font-bold text-ink/40 cursor-pointer">1Y</span>
+            <span class="text-xs font-bold text-ink/40 cursor-pointer">ALL</span>
+          </div>
+
+          <!-- Podium -->
+          <div class="flex items-end justify-center gap-3 px-6 pb-6">
+            <!-- 2nd -->
+            <div class="glass-card rounded-2xl w-[100px] h-[110px] flex flex-col items-center p-3 relative">
+              <div class="absolute -top-2.5 w-6 h-6 rounded-full bg-silver flex items-center justify-center text-xs font-bold text-white shadow">2</div>
+              <img src="https://i.pravatar.cc/150?u=2" class="w-11 h-11 rounded-full border-2 border-white mb-2" alt="">
+              <span class="text-xs font-bold">Marcus T.</span>
+              <span class="font-fraunces text-sm font-bold text-positive">+98.2%</span>
+            </div>
+            <!-- 1st -->
+            <div class="glass-card rounded-2xl w-[110px] h-[140px] flex flex-col items-center p-3 relative border-gold/50 mb-2.5 z-10">
+              <div class="absolute -top-2.5 w-6 h-6 rounded-full bg-gold flex items-center justify-center text-xs font-bold text-white shadow">1</div>
+              <img src="https://i.pravatar.cc/150?u=1" class="w-[52px] h-[52px] rounded-full border-2 border-white mb-2" alt="">
+              <span class="text-xs font-bold">Elena M.</span>
+              <span class="font-fraunces text-sm font-bold text-positive">+142.5%</span>
+            </div>
+            <!-- 3rd -->
+            <div class="glass-card rounded-2xl w-[100px] h-[100px] flex flex-col items-center p-3 relative">
+              <div class="absolute -top-2.5 w-6 h-6 rounded-full bg-bronze flex items-center justify-center text-xs font-bold text-white shadow">3</div>
+              <img src="https://i.pravatar.cc/150?u=3" class="w-11 h-11 rounded-full border-2 border-white mb-2" alt="">
+              <span class="text-xs font-bold">Jin K.</span>
+              <span class="font-fraunces text-sm font-bold text-positive">+84.1%</span>
+            </div>
+          </div>
+
+          <!-- Table -->
+          <div class="flex-1 bg-white rounded-t-[32px] pt-6 pb-28 overflow-y-auto no-scrollbar shadow-[0_-10px_30px_rgba(0,0,0,0.03)]">
+            <div class="grid grid-cols-[35px_40px_1fr_60px_50px] items-center px-6 py-3 border-b border-ink/5">
+              <span class="text-sm font-bold text-ink/40">4</span>
+              <img src="https://i.pravatar.cc/150?u=4" class="w-8 h-8 rounded-xl" alt="">
+              <div class="pl-2"><p class="text-sm font-semibold m-0">Alex Reed</p><span class="text-[10px] font-bold text-forest bg-forest/10 px-1.5 py-0.5 rounded">COPILOT 94</span></div>
+              <div class="text-right"><span class="font-fraunces font-bold text-sm text-positive">+76.4%</span><p class="text-[10px] text-ink/40 m-0">4.2k</p></div>
+              <div class="flex justify-end"><button class="w-8 h-8 bg-ink text-paper rounded-lg flex items-center justify-center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"></path></svg></button></div>
+            </div>
+            <div class="grid grid-cols-[35px_40px_1fr_60px_50px] items-center px-6 py-3 border-b border-ink/5">
+              <span class="text-sm font-bold text-ink/40">5</span>
+              <img src="https://i.pravatar.cc/150?u=5" class="w-8 h-8 rounded-xl" alt="">
+              <div class="pl-2"><p class="text-sm font-semibold m-0">Sarah Chen</p><span class="text-[10px] font-bold text-forest bg-forest/10 px-1.5 py-0.5 rounded">COPILOT 91</span></div>
+              <div class="text-right"><span class="font-fraunces font-bold text-sm text-positive">+72.1%</span><p class="text-[10px] text-ink/40 m-0">8.9k</p></div>
+              <div class="flex justify-end"><button class="w-8 h-8 bg-ink text-paper rounded-lg flex items-center justify-center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"></path></svg></button></div>
+            </div>
+            <div class="grid grid-cols-[35px_40px_1fr_60px_50px] items-center px-6 py-3 border-b border-ink/5">
+              <span class="text-sm font-bold text-ink/40">6</span>
+              <img src="https://i.pravatar.cc/150?u=6" class="w-8 h-8 rounded-xl" alt="">
+              <div class="pl-2"><p class="text-sm font-semibold m-0">Lucas V.</p><span class="text-[10px] font-bold text-forest bg-forest/10 px-1.5 py-0.5 rounded">COPILOT 89</span></div>
+              <div class="text-right"><span class="font-fraunces font-bold text-sm text-positive">+68.8%</span><p class="text-[10px] text-ink/40 m-0">1.5k</p></div>
+              <div class="flex justify-end"><button class="w-8 h-8 bg-ink text-paper rounded-lg flex items-center justify-center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"></path></svg></button></div>
+            </div>
+            <p class="text-center py-5 text-xs text-ink/30 font-semibold">LOADING RANKS 7 - 100</p>
+          </div>
+
+          <!-- Bottom Nav -->
+          <nav class="absolute bottom-4 left-4 right-4 glass-strong rounded-[26px] flex justify-around py-2.5 z-50 shadow-lg">
+            <button onclick="goTo('home')" class="flex flex-col items-center gap-0.5 text-[10px] text-ink/40 nav-item">
+              <div class="w-10 h-10 flex items-center justify-center rounded-2xl"><i class="ph ph-house text-xl"></i></div>
+              <span>Home</span>
+            </button>
+            <button onclick="goTo('discover')" class="flex flex-col items-center gap-0.5 text-[10px] text-ink/40 nav-item">
+              <div class="w-10 h-10 flex items-center justify-center rounded-2xl"><i class="ph ph-compass text-xl"></i></div>
+              <span>Discover</span>
+            </button>
+            <button onclick="goTo('leaderboard')" class="flex flex-col items-center gap-0.5 text-[10px] text-ink nav-item">
+              <div class="w-10 h-10 flex items-center justify-center rounded-2xl bg-ink text-paper shadow-md"><i class="ph-fill ph-ranking text-xl"></i></div>
+              <span class="font-medium">Leaderboard</span>
+            </button>
+            <button onclick="goTo('profile')" class="flex flex-col items-center gap-0.5 text-[10px] text-ink/40 nav-item">
+              <div class="w-10 h-10 flex items-center justify-center rounded-2xl"><i class="ph ph-user text-xl"></i></div>
+              <span>Profile</span>
+            </button>
+          </nav>
+        </div>
+
+        <!-- ========== PROFILE ========== -->
+        <div id="profile" class="screen bg-transparent text-ink flex-col h-full w-full relative overflow-hidden">
+          <!-- Header -->
+          <header class="pt-16 px-6 pb-2 text-center">
+            <h1 class="text-xl font-fraunces font-semibold text-ink">Profile</h1>
+          </header>
+
+          <!-- Main Content -->
+          <main class="flex-1 overflow-y-auto no-scrollbar px-6 pb-28">
+            <!-- Avatar Section -->
+            <div class="flex flex-col items-center pt-4 mb-8">
+              <div class="relative mb-4 group cursor-pointer">
+                <div class="w-24 h-24 rounded-full p-1 glass">
+                  <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&h=200" class="w-full h-full rounded-full object-cover" alt="Profile">
+                </div>
+                <div class="absolute bottom-0 right-0 w-8 h-8 bg-forest rounded-full border-2 border-paper flex items-center justify-center shadow-sm">
+                  <i class="ph-fill ph-camera text-white text-xs"></i>
+                </div>
+              </div>
+              <h2 class="font-fraunces text-2xl font-bold text-ink mb-1">Ahmed Al-Rashid</h2>
+              <p class="text-xs font-medium text-clay uppercase tracking-wider">Member since Jan 2024</p>
+            </div>
+
+            <!-- Account Menu Section -->
+            <div class="mb-6">
+              <div class="glass-card rounded-2xl overflow-hidden">
+                <button onclick="goTo('subscriptions')" class="w-full px-5 py-4 flex items-center gap-4 border-b border-white/20 active:bg-white/10 transition-colors">
+                  <div class="w-8 h-8 rounded-xl glass flex items-center justify-center">
+                    <i class="ph ph-receipt text-lg text-ink/70"></i>
+                  </div>
+                  <span class="flex-1 text-left font-medium text-sm text-ink">My Subscriptions</span>
+                  <i class="ph ph-caret-right text-clay/50"></i>
+                </button>
+                <button onclick="goTo('connected-accounts')" class="w-full px-5 py-4 flex items-center gap-4 border-b border-white/20 active:bg-white/10 transition-colors">
+                  <div class="w-8 h-8 rounded-xl glass flex items-center justify-center">
+                    <i class="ph ph-bank text-lg text-ink/70"></i>
+                  </div>
+                  <span class="flex-1 text-left font-medium text-sm text-ink">Connected Accounts</span>
+                  <i class="ph ph-caret-right text-clay/50"></i>
+                </button>
+                <button class="w-full px-5 py-4 flex items-center gap-4 border-b border-white/20 active:bg-white/10 transition-colors">
+                  <div class="w-8 h-8 rounded-xl glass flex items-center justify-center">
+                    <i class="ph ph-sliders text-lg text-ink/70"></i>
+                  </div>
+                  <span class="flex-1 text-left font-medium text-sm text-ink">Copy Preferences</span>
+                  <i class="ph ph-caret-right text-clay/50"></i>
+                </button>
+                <button onclick="goTo('choose-plan')" class="w-full px-5 py-4 flex items-center gap-4 border-b border-white/20 active:bg-white/10 transition-colors">
+                  <div class="w-8 h-8 rounded-xl glass flex items-center justify-center">
+                    <i class="ph ph-crown-simple text-lg text-ink/70"></i>
+                  </div>
+                  <div class="flex-1 flex items-center justify-between">
+                    <span class="text-left font-medium text-sm text-ink">Subscription Plan</span>
+                    <span class="text-[10px] font-bold bg-forest/15 text-forest px-2 py-0.5 rounded-full uppercase tracking-wide">Pro</span>
+                  </div>
+                  <i class="ph ph-caret-right text-clay/50"></i>
+                </button>
+                <button onclick="goTo('activity')" class="w-full px-5 py-4 flex items-center gap-4 border-b border-white/20 active:bg-white/10 transition-colors">
+                  <div class="w-8 h-8 rounded-xl glass flex items-center justify-center">
+                    <i class="ph ph-chart-bar text-lg text-ink/70"></i>
+                  </div>
+                  <span class="flex-1 text-left font-medium text-sm text-ink">Activity Feed</span>
+                  <i class="ph ph-caret-right text-clay/50"></i>
+                </button>
+                <button onclick="goTo('creator-dashboard')" class="w-full px-5 py-4 flex items-center gap-4 active:bg-white/10 transition-colors">
+                  <div class="w-8 h-8 rounded-xl glass flex items-center justify-center">
+                    <i class="ph ph-sparkle text-lg text-ink/70"></i>
+                  </div>
+                  <span class="flex-1 text-left font-medium text-sm text-ink">Become a Creator</span>
+                  <i class="ph ph-caret-right text-clay/50"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Settings Section -->
+            <div class="mb-6">
+              <h3 class="font-fraunces text-sm font-semibold text-ink px-2 mb-3">Settings</h3>
+              <div class="glass-card rounded-2xl overflow-hidden">
+                <button class="w-full px-5 py-4 flex items-center gap-4 border-b border-white/20 active:bg-white/10 transition-colors">
+                  <div class="w-8 h-8 rounded-xl glass flex items-center justify-center">
+                    <i class="ph ph-bell text-lg text-ink/70"></i>
+                  </div>
+                  <span class="flex-1 text-left font-medium text-sm text-ink">Notifications</span>
+                  <i class="ph ph-caret-right text-clay/50"></i>
+                </button>
+                <button class="w-full px-5 py-4 flex items-center gap-4 border-b border-white/20 active:bg-white/10 transition-colors">
+                  <div class="w-8 h-8 rounded-xl glass flex items-center justify-center">
+                    <i class="ph ph-shield-check text-lg text-ink/70"></i>
+                  </div>
+                  <span class="flex-1 text-left font-medium text-sm text-ink">Security</span>
+                  <i class="ph ph-caret-right text-clay/50"></i>
+                </button>
+                <button class="w-full px-5 py-4 flex items-center gap-4 border-b border-white/20 active:bg-white/10 transition-colors">
+                  <div class="w-8 h-8 rounded-xl glass flex items-center justify-center">
+                    <i class="ph ph-lifebuoy text-lg text-ink/70"></i>
+                  </div>
+                  <span class="flex-1 text-left font-medium text-sm text-ink">Help & Support</span>
+                  <i class="ph ph-caret-right text-clay/50"></i>
+                </button>
+                <button class="w-full px-5 py-4 flex items-center gap-4 border-b border-white/20 active:bg-white/10 transition-colors">
+                  <div class="w-8 h-8 rounded-xl glass flex items-center justify-center">
+                    <i class="ph ph-file-text text-lg text-ink/70"></i>
+                  </div>
+                  <span class="flex-1 text-left font-medium text-sm text-ink">Legal</span>
+                  <i class="ph ph-caret-right text-clay/50"></i>
+                </button>
+                <button onclick="goTo('welcome1')" class="w-full px-5 py-4 flex items-center gap-4 active:bg-negative/5 transition-colors">
+                  <div class="w-8 h-8 rounded-xl bg-negative/10 flex items-center justify-center">
+                    <i class="ph ph-sign-out text-lg text-negative"></i>
+                  </div>
+                  <span class="flex-1 text-left font-medium text-sm text-negative">Log Out</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Version -->
+            <div class="flex flex-col items-center justify-center pb-4 opacity-60">
+              <i class="ph-fill ph-plant text-clay text-xl mb-2"></i>
+              <span class="text-[10px] font-mono font-medium text-clay uppercase tracking-widest">Version 2.4.0</span>
+            </div>
+          </main>
+
+          <!-- Bottom Nav -->
+          <nav class="absolute bottom-4 left-4 right-4 glass-strong rounded-[26px] flex justify-around py-2.5 z-50 shadow-lg">
+            <button onclick="goTo('home')" class="flex flex-col items-center gap-0.5 text-[10px] text-ink/40 nav-item">
+              <div class="w-10 h-10 flex items-center justify-center rounded-2xl"><i class="ph ph-house text-xl"></i></div>
+              <span>Home</span>
+            </button>
+            <button onclick="goTo('discover')" class="flex flex-col items-center gap-0.5 text-[10px] text-ink/40 nav-item">
+              <div class="w-10 h-10 flex items-center justify-center rounded-2xl"><i class="ph ph-compass text-xl"></i></div>
+              <span>Discover</span>
+            </button>
+            <button onclick="goTo('leaderboard')" class="flex flex-col items-center gap-0.5 text-[10px] text-ink/40 nav-item">
+              <div class="w-10 h-10 flex items-center justify-center rounded-2xl"><i class="ph ph-ranking text-xl"></i></div>
+              <span>Leaderboard</span>
+            </button>
+            <button onclick="goTo('profile')" class="flex flex-col items-center gap-0.5 text-[10px] text-ink nav-item">
+              <div class="w-10 h-10 flex items-center justify-center rounded-2xl bg-ink text-paper shadow-md"><i class="ph-fill ph-user text-xl"></i></div>
+              <span class="font-medium">Profile</span>
+            </button>
+          </nav>
+        </div>
+
+        <!-- ========== COPY STRATEGY ========== -->
+        <div id="copy-strategy" class="screen bg-transparent text-ink flex-col h-full w-full relative overflow-hidden">
+          <!-- Top Section: Header -->
+          <div class="pt-14 px-6 pb-4">
+            <button onclick="goBack()" class="flex items-center gap-2 text-ink/60 mb-4">
+              <svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none">
+                <path d="M15 18l-6-6 6-6"></path>
+              </svg>
+              <span class="font-medium text-sm">Back</span>
+            </button>
+            <h1 class="font-fraunces text-3xl font-semibold tracking-tight text-ink mb-2">Copy Strategy</h1>
+            <p class="font-inter text-sm text-ink/60">Start copying <span id="cs-fund-name" class="font-semibold text-ink">Tech Momentum</span> by <span id="cs-creator-name">StockTalk</span></p>
+          </div>
+
+          <!-- Bottom Section: Settings (full-bleed white background) -->
+          <div class="flex-1 bg-white rounded-t-3xl overflow-hidden flex flex-col">
+            <div class="flex-1 overflow-y-auto no-scrollbar">
+              <!-- Investment Amount -->
+              <div class="px-6 py-5 border-b border-ink/5">
+                <label class="block text-sm font-bold text-ink/40 uppercase tracking-wider mb-3">Investment Amount</label>
+                <div class="flex items-center gap-3">
+                  <span class="font-fraunces text-3xl font-semibold text-ink">$</span>
+                  <input
+                    type="text"
+                    id="investmentAmountInput"
+                    value="2,500"
+                    class="flex-1 font-fraunces text-3xl font-semibold text-ink bg-transparent outline-none border-none"
+                    placeholder="0"
+                    inputmode="decimal"
+                  >
+                </div>
+                <p class="text-xs text-ink/40 mt-2">Available balance: $12,450.00</p>
+              </div>
+
+              <!-- Stop Loss -->
+              <div class="px-6 py-5 border-b border-ink/5">
+                <label class="block text-sm font-bold text-ink/40 uppercase tracking-wider mb-3">Stop Loss</label>
+                <div class="flex items-center gap-3">
+                  <button onclick="setStopLoss(10)" class="flex-1 py-3 rounded-xl border-2 border-ink/10 text-ink/60 font-semibold text-sm hover:border-ink/30 transition-all stop-loss-btn" data-value="10">10%</button>
+                  <button onclick="setStopLoss(15)" class="flex-1 py-3 rounded-xl border-2 border-forest bg-forest/5 text-forest font-semibold text-sm stop-loss-btn active" data-value="15">15%</button>
+                  <button onclick="setStopLoss(20)" class="flex-1 py-3 rounded-xl border-2 border-ink/10 text-ink/60 font-semibold text-sm hover:border-ink/30 transition-all stop-loss-btn" data-value="20">20%</button>
+                  <button onclick="setStopLoss(0)" class="flex-1 py-3 rounded-xl border-2 border-ink/10 text-ink/60 font-semibold text-sm hover:border-ink/30 transition-all stop-loss-btn" data-value="0">None</button>
+                </div>
+                <p class="text-xs text-ink/40 mt-2">Auto-sell if portfolio drops by this percentage</p>
+              </div>
+
+              <!-- Copy Open Trades Toggle -->
+              <div class="px-6 py-5 flex justify-between items-center">
+                <div>
+                  <p class="font-semibold text-ink text-sm">Copy Existing Positions</p>
+                  <p class="text-xs text-ink/40 mt-1">Mirror the current open trades immediately</p>
+                </div>
+                <div id="copyTradesToggle" onclick="toggleCopyTrades()" class="w-12 h-7 bg-forest rounded-full p-0.5 cursor-pointer transition-all">
+                  <div id="copyTradesKnob" class="w-6 h-6 bg-white rounded-full shadow-sm ml-auto transition-all"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Fixed Bottom CTA -->
+            <div class="px-6 py-5 border-t border-ink/5">
+              <button onclick="confirmCopyStrategy()" class="w-full bg-forest text-paper py-4 rounded-xl font-fraunces text-lg font-semibold shadow-lg hover:bg-forest/90 active:scale-[0.98] transition-all">
+                Start Copying
+              </button>
+              <p class="text-[11px] text-center text-ink/40 mt-3">By proceeding, you agree to allocate funds to mirror this strategy</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- ========== CREATOR PROFILE ========== -->
+        <div id="creator-profile" class="screen bg-transparent text-ink flex-col h-full w-full relative overflow-hidden">
+          <!-- Main Scrollable Content -->
+          <main class="flex-1 overflow-y-auto no-scrollbar">
+            <!-- Hero Image Section -->
+            <section class="relative h-[420px] w-full shrink-0">
+              <div class="absolute inset-0 w-full h-full">
+                <img
+                  id="cp-hero-image"
+                  src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=800&auto=format&fit=crop"
+                  alt="Creator"
+                  class="hero-image w-full h-full object-cover"
+                />
+                <div class="absolute inset-0 bg-gradient-to-t from-forest/90 via-forest/20 to-transparent"></div>
+              </div>
+
+              <!-- Floating Header -->
+              <div class="absolute top-0 w-full px-6 pt-14 flex justify-between items-center z-20">
+                <button onclick="goBack()" class="w-10 h-10 flex items-center justify-center rounded-full bg-white/20 backdrop-blur-md border border-white/20 text-white hover:bg-white/30 transition-colors">
+                  <svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none">
+                    <path d="M15 18l-6-6 6-6"></path>
+                  </svg>
+                </button>
+                <button class="w-10 h-10 flex items-center justify-center rounded-full bg-white/20 backdrop-blur-md border border-white/20 text-white hover:bg-white/30 transition-colors">
+                  <i class="ph ph-dots-three text-xl"></i>
+                </button>
+              </div>
+
+              <!-- Name on Image -->
+              <div class="absolute bottom-0 left-0 w-full px-6 pb-8 z-20">
+                <p id="cp-fund-name" class="text-white/70 text-xs font-bold uppercase tracking-widest mb-2">Tech Momentum</p>
+                <h1 id="cp-creator-name" class="font-fraunces text-4xl font-bold text-white mb-1 tracking-tight">Sarah Chen</h1>
+                <p id="cp-creator-title" class="text-white/80 text-sm font-medium tracking-wide">Tech Momentum Lead</p>
+              </div>
+            </section>
+
+            <!-- Content Below Image (paper background) -->
+            <div class="px-6 pt-6">
+              <!-- Verified Badge -->
+              <div class="flex items-center gap-2 mb-8">
+                <div class="w-6 h-6 rounded-full bg-forest text-white flex items-center justify-center">
+                  <i class="ph-fill ph-check-circle text-sm"></i>
+                </div>
+                <span class="text-sm text-ink/60 font-medium">
+                  Verified by <span class="text-ink font-bold">dopl.</span>
+                </span>
+                <i class="ph-fill ph-seal-check text-blue-500 text-sm ml-1"></i>
+              </div>
+
+              <!-- Performance Stats -->
+              <div class="mb-8">
+                <div class="bg-white rounded-2xl border border-ink/5 flex divide-x divide-ink/5">
+                  <div class="flex-1 px-4 py-3 text-center">
+                    <p class="text-[10px] font-bold text-ink/40 uppercase tracking-wider mb-1">Return</p>
+                    <p id="cp-return" class="font-mono text-lg font-bold text-forest">+34.2%</p>
+                  </div>
+                  <div class="flex-1 px-4 py-3 text-center">
+                    <p class="text-[10px] font-bold text-ink/40 uppercase tracking-wider mb-1">Win Rate</p>
+                    <p id="cp-winrate" class="font-mono text-lg font-bold text-ink">68%</p>
+                  </div>
+                  <div class="flex-1 px-4 py-3 text-center">
+                    <p class="text-[10px] font-bold text-ink/40 uppercase tracking-wider mb-1">Risk</p>
+                    <p id="cp-risk" class="font-mono text-lg font-bold text-orange-500">4/10</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- About -->
+              <div class="mb-6">
+                <h2 class="font-fraunces text-xl font-bold text-ink mb-3">About</h2>
+                <p id="cp-about" class="text-ink/70 text-sm leading-relaxed">
+                  Heralded as one of the most consistent momentum traders in the tech sector, Sarah has made a name for herself by identifying breakout patterns in semiconductor and software stocks. Specializes in swing trades lasting 2-5 days with strict risk management protocols.
+                </p>
+              </div>
+            </div>
+
+            <!-- Current Holdings (full-bleed white background) -->
+            <div class="bg-white rounded-t-3xl pt-5 pb-32 min-h-[300px]">
+              <div class="px-6 pb-3">
+                <h2 class="text-sm font-bold text-ink/40 uppercase tracking-wider">Current Holdings</h2>
+              </div>
+              <div id="cp-holdings">
+                <!-- Holdings will be dynamically populated -->
+              </div>
+            </div>
+          </main>
+
+          <!-- Fixed Bottom CTA -->
+          <div class="absolute bottom-0 left-0 right-0 bg-white px-6 py-5 border-t border-ink/5 z-50">
+            <button onclick="goTo('copy-strategy')" class="w-full bg-forest text-paper py-4 rounded-xl font-fraunces text-lg font-semibold shadow-lg hover:bg-forest/90 active:scale-[0.98] transition-all flex items-center justify-center gap-2">
+              <i class="ph-fill ph-check-circle text-xl"></i>
+              Select Portfolio
+            </button>
+          </div>
+        </div>
+
+        <!-- ========== TRADE DETAIL ========== -->
+        <div id="trade-detail" class="screen bg-transparent text-ink flex-col h-full w-full relative overflow-hidden">
+          <!-- Header -->
+          <header class="px-6 pt-16 pb-4 flex items-center justify-between z-20 flex-none">
+            <button onclick="goTo('home')" class="w-10 h-10 flex items-center justify-center rounded-xl glass">
+              <svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none">
+                <path d="M19 12H5M12 19l-7-7 7-7"></path>
+              </svg>
+            </button>
+            <h1 class="font-fraunces text-xl font-semibold text-ink">Trade Detail</h1>
+            <div class="w-10"></div>
+          </header>
+
+          <!-- Main Content -->
+          <main class="flex-1 overflow-y-auto no-scrollbar pb-8 px-6">
+            <!-- Creator Card -->
+            <div onclick="goTo('creator-profile')" class="glass-card rounded-2xl p-4 mb-5 flex items-center gap-4 cursor-pointer active:scale-[0.98] transition-all">
+              <div class="relative">
+                <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&h=100" class="w-12 h-12 rounded-xl object-cover border-2 border-white/30" alt="Sarah Chen">
+                <div class="absolute -bottom-1 -right-1 w-5 h-5 bg-forest rounded-full border-2 border-paper flex items-center justify-center">
+                  <i class="ph-fill ph-star text-[8px] text-white"></i>
+                </div>
+              </div>
+              <div class="flex-1">
+                <p class="font-inter font-bold text-ink text-sm">Sarah Chen</p>
+                <p class="text-[11px] text-clay font-medium">Tech-focused momentum strategy</p>
+              </div>
+              <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" class="text-clay/50">
+                <path d="M9 18l6-6-6-6"></path>
+              </svg>
+            </div>
+
+            <!-- Trade Card -->
+            <div class="glass-card rounded-[1.75rem] p-5 mb-5 relative overflow-hidden">
+              <!-- Decorative gradient -->
+              <div class="absolute top-0 right-0 w-32 h-32 bg-positive/10 rounded-full -mr-10 -mt-10 blur-2xl"></div>
+
+              <!-- Ticker & Action -->
+              <div class="flex justify-between items-start mb-5 relative z-10">
+                <div>
+                  <div class="flex items-center gap-2.5 mb-1">
+                    <div class="w-9 h-9 rounded-xl glass flex items-center justify-center">
+                      <i class="ph-fill ph-apple-logo text-ink text-lg"></i>
+                    </div>
+                    <span class="text-ink font-fraunces font-bold text-2xl tracking-tight">AAPL</span>
+                  </div>
+                  <p class="text-[10px] text-clay font-bold uppercase tracking-wider pl-0.5">Apple Inc.</p>
+                </div>
+                <div class="px-3 py-1.5 bg-positive/15 rounded-full flex items-center gap-1.5 border border-positive/20">
+                  <div class="w-1.5 h-1.5 rounded-full bg-positive animate-pulse"></div>
+                  <span class="text-xs font-bold text-positive uppercase tracking-wide">Buy</span>
+                </div>
+              </div>
+
+              <!-- Trade Details Grid -->
+              <div class="grid grid-cols-2 gap-y-5 gap-x-4 mb-5 relative z-10">
+                <div>
+                  <p class="text-[10px] text-clay uppercase font-bold tracking-wider mb-1">Price</p>
+                  <p class="font-mono text-xl font-semibold text-ink">$152.34</p>
+                </div>
+                <div class="text-right">
+                  <p class="text-[10px] text-clay uppercase font-bold tracking-wider mb-1">Quantity</p>
+                  <p class="font-mono text-xl font-semibold text-ink">10 <span class="text-sm text-clay/60">units</span></p>
+                </div>
+                <div class="col-span-2 pt-4 border-t border-white/30">
+                  <div class="flex justify-between items-baseline">
+                    <p class="text-[10px] text-clay uppercase font-bold tracking-wider">Total Value</p>
+                    <p class="font-mono text-2xl font-bold text-ink">$1,523.40</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Timestamp -->
+              <div class="flex items-center gap-2 text-clay/70 glass -mx-5 -mb-5 px-5 py-3 mt-2 rounded-b-[1.5rem]">
+                <i class="ph ph-clock text-sm"></i>
+                <span class="text-[10px] font-mono font-medium">Feb 1, 2026 • 2:34 PM</span>
+              </div>
+            </div>
+
+            <!-- Your Execution Card -->
+            <div class="mb-5">
+              <h3 class="font-fraunces text-base text-ink font-semibold mb-3 px-1">Your Execution</h3>
+              <div class="bg-forest text-paper rounded-2xl p-5 shadow-lg relative overflow-hidden">
+                <!-- Decorative circle -->
+                <div class="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-10 -mt-10"></div>
+
+                <div class="flex justify-between items-start mb-5 relative z-10">
+                  <div>
+                    <p class="text-[10px] text-white/50 uppercase font-bold tracking-wider mb-1">Status</p>
+                    <div class="flex items-center gap-2">
+                      <div class="w-5 h-5 bg-white rounded-full flex items-center justify-center">
+                        <i class="ph-fill ph-check text-forest text-xs"></i>
+                      </div>
+                      <span class="text-sm font-bold text-white">Executed</span>
+                    </div>
+                  </div>
+                  <div class="text-right">
+                    <p class="text-[10px] text-white/50 uppercase font-bold tracking-wider mb-1">Proportional</p>
+                    <span class="bg-white/15 text-white/90 px-2.5 py-1 rounded-lg text-[11px] font-mono font-medium">25%</span>
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3 relative z-10">
+                  <div class="bg-white/10 rounded-xl p-4 border border-white/10">
+                    <p class="text-[9px] text-white/50 uppercase font-bold mb-1">Your Shares</p>
+                    <p class="font-mono text-xl font-semibold">2.5</p>
+                  </div>
+                  <div class="bg-white/10 rounded-xl p-4 border border-white/10">
+                    <p class="text-[9px] text-white/50 uppercase font-bold mb-1">Your Total</p>
+                    <p class="font-mono text-xl font-semibold">$380.85</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Rationale Card -->
+            <div class="mb-6">
+              <h3 class="font-fraunces text-base text-ink font-semibold mb-3 px-1">Rationale</h3>
+              <div class="glass-card rounded-2xl p-5 relative">
+                <i class="ph-fill ph-quotes text-3xl text-clay/20 absolute top-4 left-4"></i>
+                <div class="relative z-10 pl-6">
+                  <p class="font-inter text-sm text-ink/80 leading-relaxed italic">
+                    "Taking a position in AAPL as it shows strong support at the $150 level. Tech earnings are looking robust this quarter, and I expect a breakout above resistance in the coming weeks."
+                  </p>
+                  <div class="mt-4 flex items-center gap-2">
+                    <div class="h-px bg-white/30 flex-1"></div>
+                    <span class="text-[10px] font-bold text-clay uppercase tracking-widest">Sarah's Note</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </main>
+        </div>
+
+        <!-- ========== COPY SUCCESS ========== -->
+        <div id="copy-success" class="screen bg-transparent text-ink flex-col h-full w-full relative overflow-hidden">
+          <!-- Confetti -->
+          <div class="absolute inset-0 pointer-events-none overflow-hidden">
+            <div class="confetti absolute w-2.5 h-2.5 rounded-sm bg-positive" style="left: 10%; animation-delay: 0s;"></div>
+            <div class="confetti absolute w-2.5 h-2.5 rounded-sm bg-ink" style="left: 25%; animation-delay: 0.5s;"></div>
+            <div class="confetti absolute w-2.5 h-2.5 rounded-sm bg-forest" style="left: 45%; animation-delay: 0.2s;"></div>
+            <div class="confetti absolute w-2.5 h-2.5 rounded-sm bg-positive" style="left: 65%; animation-delay: 0.8s;"></div>
+            <div class="confetti absolute w-2.5 h-2.5 rounded-sm bg-ink" style="left: 85%; animation-delay: 0.3s;"></div>
+            <div class="confetti absolute w-2.5 h-2.5 rounded-sm bg-forest" style="left: 95%; animation-delay: 1.1s;"></div>
+            <div class="confetti absolute w-2.5 h-2.5 rounded-sm bg-clay" style="left: 5%; animation-delay: 0.7s;"></div>
+            <div class="confetti absolute w-2.5 h-2.5 rounded-sm bg-positive" style="left: 55%; animation-delay: 1.3s;"></div>
+          </div>
+
+          <!-- Main Content -->
+          <main class="flex-1 flex flex-col items-center justify-center px-6 text-center">
+            <!-- Success Icon -->
+            <div class="animate-bounce-in w-24 h-24 bg-ink rounded-full flex items-center justify-center mb-8 shadow-xl">
+              <svg viewBox="0 0 24 24" class="w-12 h-12 check-draw" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            </div>
+
+            <!-- Title -->
+            <h1 class="font-fraunces text-[2rem] leading-tight font-semibold text-ink mb-4 animate-slide-up delay-200">
+              You're now copying<br/><span id="csuccess-fund-name">Tech Momentum</span>!
+            </h1>
+
+            <!-- Allocation Badge -->
+            <div class="animate-slide-up delay-300 px-5 py-2.5 glass rounded-full mb-6">
+              <span class="text-sm font-semibold text-forest">50% of your portfolio</span>
+            </div>
+
+            <!-- Summary Card -->
+            <div class="animate-slide-up delay-400 glass-card rounded-2xl p-5 w-full max-w-[300px] mb-8">
+              <div class="flex items-center gap-4 mb-4">
+                <div class="w-12 h-12 rounded-xl border-2 border-white/30 bg-forest/20 flex items-center justify-center">
+                  <i class="ph-fill ph-chart-line-up text-xl text-forest"></i>
+                </div>
+                <div class="text-left">
+                  <p id="csuccess-creator-name" class="font-fraunces font-semibold text-ink">Sarah Chen</p>
+                  <p class="text-xs text-clay">Strategy Lead</p>
+                </div>
+              </div>
+              <div class="grid grid-cols-2 gap-3 pt-4 border-t border-white/30">
+                <div class="text-center">
+                  <p class="text-[9px] uppercase text-clay/60 font-bold mb-1">Investment</p>
+                  <p class="font-mono text-base font-bold text-ink">$2,500</p>
+                </div>
+                <div class="text-center">
+                  <p class="text-[9px] uppercase text-clay/60 font-bold mb-1">Stop Loss</p>
+                  <p class="font-mono text-base font-bold text-ink">15%</p>
+                </div>
+              </div>
+            </div>
+          </main>
+
+          <!-- Bottom Buttons -->
+          <footer class="px-6 pb-10 pt-4 flex flex-col gap-3 animate-slide-up delay-500">
+            <button onclick="goTo('home')" class="w-full bg-ink text-paper font-semibold text-base py-4 rounded-2xl shadow-lg active:scale-[0.98] transition-all">
+              View Dashboard
+            </button>
+            <button onclick="goTo('discover')" class="w-full bg-transparent text-ink font-semibold text-base py-4 rounded-2xl border-2 border-ink active:scale-[0.98] transition-all">
+              Find More Creators
+            </button>
+          </footer>
+        </div>
+
+        <!-- ========== ACTIVITY FEED ========== -->
+        <div id="activity" class="screen bg-transparent text-ink flex-col h-full w-full relative overflow-hidden">
+          <!-- Header -->
+          <header class="px-6 pt-16 pb-2">
+            <button onclick="goTo('home')" class="flex items-center gap-2 text-ink/70 mb-6">
+              <svg width="18" height="18" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" fill="none">
+                <path d="M19 12H5M12 19l-7-7 7-7"></path>
+              </svg>
+              <span class="text-sm font-medium">Overview</span>
+            </button>
+            <h1 class="font-fraunces text-3xl font-semibold text-ink mb-1">Activity</h1>
+            <p class="text-sm text-ink/60">Latest trade mirrors and allocations.</p>
+          </header>
+
+          <!-- Main Content -->
+          <main class="flex-1 overflow-y-auto no-scrollbar px-6 pt-6 pb-8">
+            <!-- Today Section -->
+            <span class="text-[10px] font-bold uppercase tracking-widest text-clay block mb-4">Today, Feb 3</span>
+
+            <!-- Activity Card 1 -->
+            <div onclick="goTo('trade-detail')" class="glass-card rounded-3xl p-5 mb-4 cursor-pointer active:scale-[0.98] transition-all">
+              <div class="flex justify-between items-start mb-4">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 bg-ink rounded-xl flex items-center justify-center text-paper shadow-md">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                    </svg>
+                  </div>
+                  <div>
+                    <h4 class="font-fraunces font-semibold text-ink m-0">BTC / USD</h4>
+                    <span class="text-[11px] text-ink/50">Mirror Trade • Elena M.</span>
+                  </div>
+                </div>
+                <div class="px-3 py-1.5 bg-positive/10 rounded-full border border-positive/10">
+                  <span class="text-[10px] font-bold text-positive uppercase">Executed</span>
+                </div>
+              </div>
+              <div class="grid grid-cols-2 gap-3 pt-4 border-t border-white/30">
+                <div>
+                  <span class="text-[10px] text-ink/50 block mb-1">Amount</span>
+                  <p class="font-semibold text-ink m-0">$1,250.00</p>
+                </div>
+                <div class="text-right">
+                  <span class="text-[10px] text-ink/50 block mb-1">Est. P&L</span>
+                  <p class="font-semibold text-positive m-0">+$42.18</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Activity Card 2 - Pending -->
+            <div class="glass-card rounded-3xl p-5 mb-4 cursor-pointer active:scale-[0.98] transition-all">
+              <div class="flex justify-between items-start mb-4">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 bg-clay rounded-xl flex items-center justify-center text-paper shadow-md">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                    </svg>
+                  </div>
+                  <div>
+                    <h4 class="font-fraunces font-semibold text-ink m-0">ETH / USD</h4>
+                    <span class="text-[11px] text-ink/50">Pending Mirror • Elena M.</span>
+                  </div>
+                </div>
+                <div class="px-3 py-1.5 bg-clay/15 rounded-full border border-clay/20">
+                  <span class="text-[10px] font-bold text-clay uppercase">Pending</span>
+                </div>
+              </div>
+              <div class="grid grid-cols-2 gap-3 pt-4 border-t border-white/30">
+                <div>
+                  <span class="text-[10px] text-ink/50 block mb-1">Limit Price</span>
+                  <p class="font-semibold text-ink m-0">$2,642.10</p>
+                </div>
+                <div class="text-right">
+                  <span class="text-[10px] text-ink/50 block mb-1">Allocation</span>
+                  <p class="font-semibold text-ink m-0">25%</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Yesterday Section -->
+            <span class="text-[10px] font-bold uppercase tracking-widest text-clay block mb-4 mt-6">Yesterday</span>
+
+            <!-- Activity Card 3 -->
+            <div onclick="goTo('trade-detail')" class="glass-card rounded-3xl p-5 mb-4 cursor-pointer active:scale-[0.98] transition-all">
+              <div class="flex justify-between items-start mb-4">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 bg-ink rounded-xl flex items-center justify-center text-paper shadow-md">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <path d="M12 6v6l4 2"></path>
+                    </svg>
+                  </div>
+                  <div>
+                    <h4 class="font-fraunces font-semibold text-ink m-0">SOL / USD</h4>
+                    <span class="text-[11px] text-ink/50">Mirror Trade • Elena M.</span>
+                  </div>
+                </div>
+                <div class="px-3 py-1.5 bg-positive/10 rounded-full border border-positive/10">
+                  <span class="text-[10px] font-bold text-positive uppercase">Executed</span>
+                </div>
+              </div>
+              <div class="grid grid-cols-2 gap-3 pt-4 border-t border-white/30">
+                <div>
+                  <span class="text-[10px] text-ink/50 block mb-1">Amount</span>
+                  <p class="font-semibold text-ink m-0">$800.00</p>
+                </div>
+                <div class="text-right">
+                  <span class="text-[10px] text-ink/50 block mb-1">Return</span>
+                  <p class="font-semibold text-positive m-0">+2.4%</p>
+                </div>
+              </div>
+            </div>
+          </main>
+        </div>
+
+        <!-- ========== MY SUBSCRIPTIONS ========== -->
+        <div id="subscriptions" class="screen bg-transparent text-ink flex-col h-full w-full relative overflow-hidden">
+          <!-- Header -->
+          <div class="pt-16 px-6 pb-6">
+            <div class="flex items-center gap-4 mb-6">
+              <button onclick="goTo('profile')" class="w-10 h-10 glass rounded-xl flex items-center justify-center active:scale-95 transition-transform">
+                <i class="ph ph-arrow-left text-xl text-ink"></i>
+              </button>
+              <h1 class="font-fraunces text-2xl font-semibold text-ink">My Subscriptions</h1>
+            </div>
+
+            <!-- Summary Card -->
+            <div class="glass-card rounded-2xl p-5 mb-6">
+              <div class="flex justify-between items-center">
+                <div>
+                  <p class="text-[10px] text-ink/50 uppercase font-bold tracking-wider mb-1">Total Monthly</p>
+                  <p class="font-mono text-2xl font-bold text-ink">$29.97</p>
+                </div>
+                <div class="text-right">
+                  <p class="text-[10px] text-ink/50 uppercase font-bold tracking-wider mb-1">Active Creators</p>
+                  <p class="font-mono text-2xl font-bold text-forest">3</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Scrollable Content -->
+          <main class="flex-1 px-6 pb-32 overflow-auto">
+            <!-- Subscription 1: Elena -->
+            <div class="glass-card rounded-2xl p-5 mb-4">
+              <div class="flex items-center gap-4 mb-4">
+                <div class="relative">
+                  <div class="w-14 h-14 bg-gradient-to-br from-forest to-forest/70 rounded-2xl flex items-center justify-center text-paper font-bold text-lg shadow-lg">
+                    ER
+                  </div>
+                  <div class="absolute -bottom-1 -right-1 w-5 h-5 bg-positive rounded-full flex items-center justify-center border-2 border-paper">
+                    <i class="ph-fill ph-check text-[10px] text-white"></i>
+                  </div>
+                </div>
+                <div class="flex-1">
+                  <h3 class="font-fraunces font-semibold text-ink text-base">Elena Rodriguez</h3>
+                  <div class="flex items-center gap-2 mt-1">
+                    <span class="text-[11px] text-ink/50">40% allocation</span>
+                    <span class="text-ink/30">•</span>
+                    <span class="text-[11px] text-positive">+24.5% return</span>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <p class="font-mono font-bold text-ink">$9.99</p>
+                  <p class="text-[10px] text-ink/50">/month</p>
+                </div>
+              </div>
+              <div class="pt-4 border-t border-white/20">
+                <div class="flex justify-between items-center mb-3">
+                  <span class="text-[11px] text-ink/50">Next payment</span>
+                  <span class="text-[11px] font-medium text-ink">Feb 15, 2024</span>
+                </div>
+                <div class="flex gap-2">
+                  <button class="flex-1 py-2.5 bg-white/40 rounded-xl text-[12px] font-semibold text-ink active:scale-[0.98] transition-all">
+                    Adjust
+                  </button>
+                  <button class="flex-1 py-2.5 bg-white/40 rounded-xl text-[12px] font-semibold text-clay active:scale-[0.98] transition-all">
+                    Pause
+                  </button>
+                  <button class="flex-1 py-2.5 bg-negative/10 rounded-xl text-[12px] font-semibold text-negative active:scale-[0.98] transition-all">
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Subscription 2: Marcus -->
+            <div class="glass-card rounded-2xl p-5 mb-4">
+              <div class="flex items-center gap-4 mb-4">
+                <div class="relative">
+                  <div class="w-14 h-14 bg-gradient-to-br from-ink to-ink/70 rounded-2xl flex items-center justify-center text-paper font-bold text-lg shadow-lg">
+                    MT
+                  </div>
+                  <div class="absolute -bottom-1 -right-1 w-5 h-5 bg-positive rounded-full flex items-center justify-center border-2 border-paper">
+                    <i class="ph-fill ph-check text-[10px] text-white"></i>
+                  </div>
+                </div>
+                <div class="flex-1">
+                  <h3 class="font-fraunces font-semibold text-ink text-base">Marcus Thorne</h3>
+                  <div class="flex items-center gap-2 mt-1">
+                    <span class="text-[11px] text-ink/50">35% allocation</span>
+                    <span class="text-ink/30">•</span>
+                    <span class="text-[11px] text-positive">+18.2% return</span>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <p class="font-mono font-bold text-ink">$9.99</p>
+                  <p class="text-[10px] text-ink/50">/month</p>
+                </div>
+              </div>
+              <div class="pt-4 border-t border-white/20">
+                <div class="flex justify-between items-center mb-3">
+                  <span class="text-[11px] text-ink/50">Next payment</span>
+                  <span class="text-[11px] font-medium text-ink">Feb 18, 2024</span>
+                </div>
+                <div class="flex gap-2">
+                  <button class="flex-1 py-2.5 bg-white/40 rounded-xl text-[12px] font-semibold text-ink active:scale-[0.98] transition-all">
+                    Adjust
+                  </button>
+                  <button class="flex-1 py-2.5 bg-white/40 rounded-xl text-[12px] font-semibold text-clay active:scale-[0.98] transition-all">
+                    Pause
+                  </button>
+                  <button class="flex-1 py-2.5 bg-negative/10 rounded-xl text-[12px] font-semibold text-negative active:scale-[0.98] transition-all">
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Subscription 3: Jade -->
+            <div class="glass-card rounded-2xl p-5 mb-4">
+              <div class="flex items-center gap-4 mb-4">
+                <div class="relative">
+                  <div class="w-14 h-14 bg-gradient-to-br from-clay to-clay/70 rounded-2xl flex items-center justify-center text-paper font-bold text-lg shadow-lg">
+                    JW
+                  </div>
+                  <div class="absolute -bottom-1 -right-1 w-5 h-5 bg-positive rounded-full flex items-center justify-center border-2 border-paper">
+                    <i class="ph-fill ph-check text-[10px] text-white"></i>
+                  </div>
+                </div>
+                <div class="flex-1">
+                  <h3 class="font-fraunces font-semibold text-ink text-base">Jade Wilson</h3>
+                  <div class="flex items-center gap-2 mt-1">
+                    <span class="text-[11px] text-ink/50">25% allocation</span>
+                    <span class="text-ink/30">•</span>
+                    <span class="text-[11px] text-positive">+31.7% return</span>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <p class="font-mono font-bold text-ink">$9.99</p>
+                  <p class="text-[10px] text-ink/50">/month</p>
+                </div>
+              </div>
+              <div class="pt-4 border-t border-white/20">
+                <div class="flex justify-between items-center mb-3">
+                  <span class="text-[11px] text-ink/50">Next payment</span>
+                  <span class="text-[11px] font-medium text-ink">Feb 22, 2024</span>
+                </div>
+                <div class="flex gap-2">
+                  <button class="flex-1 py-2.5 bg-white/40 rounded-xl text-[12px] font-semibold text-ink active:scale-[0.98] transition-all">
+                    Adjust
+                  </button>
+                  <button class="flex-1 py-2.5 bg-white/40 rounded-xl text-[12px] font-semibold text-clay active:scale-[0.98] transition-all">
+                    Pause
+                  </button>
+                  <button class="flex-1 py-2.5 bg-negative/10 rounded-xl text-[12px] font-semibold text-negative active:scale-[0.98] transition-all">
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="text-center py-6">
+              <div class="flex items-center justify-center gap-2 text-ink/40">
+                <i class="ph ph-shield-check text-lg"></i>
+                <span class="text-[11px] font-medium">Payment Security Enabled</span>
+              </div>
+              <p class="text-[10px] text-ink/30 mt-2">dopl. v1.0.0</p>
+            </div>
+          </main>
+        </div>
+
+        <!-- ========== CONNECTED ACCOUNTS ========== -->
+        <div id="connected-accounts" class="screen bg-transparent text-ink flex-col h-full w-full relative overflow-hidden">
+          <!-- Header -->
+          <div class="pt-16 px-6 pb-4">
+            <div class="flex items-center gap-4 mb-4">
+              <button onclick="goTo('profile')" class="w-10 h-10 glass rounded-xl flex items-center justify-center active:scale-95 transition-transform">
+                <i class="ph ph-arrow-left text-xl text-ink"></i>
+              </button>
+              <h1 class="font-fraunces text-2xl font-semibold text-ink">Connected Accounts</h1>
+            </div>
+            <div class="flex items-center justify-between px-1">
+              <p class="text-[10px] font-bold text-clay uppercase tracking-widest">3 Active Connections</p>
+              <button class="text-[11px] font-medium text-forest underline underline-offset-2">
+                Manage API Keys
+              </button>
+            </div>
+          </div>
+
+          <!-- Scrollable Content -->
+          <main class="flex-1 px-6 pb-32 overflow-auto">
+            <!-- Account 1: Robinhood - Synced -->
+            <div class="glass-card rounded-2xl p-5 mb-4 relative overflow-hidden">
+              <div class="flex justify-between items-start mb-4">
+                <div class="flex items-center gap-3">
+                  <div class="w-12 h-12 rounded-xl bg-[#00C805]/10 flex items-center justify-center border border-[#00C805]/20">
+                    <i class="ph-fill ph-leaf text-[#00C805] text-xl"></i>
+                  </div>
+                  <div>
+                    <h3 class="font-inter font-bold text-ink text-sm">Robinhood</h3>
+                    <p class="text-[10px] text-clay font-medium uppercase tracking-wide mt-0.5">Individual</p>
+                  </div>
+                </div>
+                <div class="flex items-center gap-1.5 px-2.5 py-1 bg-positive/10 rounded-full border border-positive/10">
+                  <div class="w-1.5 h-1.5 rounded-full bg-positive animate-pulse"></div>
+                  <span class="text-[9px] font-bold text-positive uppercase tracking-wide">Synced</span>
+                </div>
+              </div>
+
+              <div class="flex items-baseline justify-between mb-4 pb-4 border-b border-white/20">
+                <div>
+                  <p class="text-[9px] text-ink/50 font-bold uppercase tracking-wider mb-1">Account No.</p>
+                  <p class="font-mono text-sm text-ink font-medium">•••• •••• 8492</p>
+                </div>
+                <div class="text-right">
+                  <p class="text-[9px] text-ink/50 font-bold uppercase tracking-wider mb-1">Last Synced</p>
+                  <div class="flex items-center justify-end gap-1 text-ink/60">
+                    <i class="ph ph-clock text-xs"></i>
+                    <span class="text-xs font-mono">Just now</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex items-center justify-end gap-3">
+                <button class="text-xs font-medium text-clay hover:text-ink flex items-center gap-1.5 px-2 py-1 hover:bg-white/30 rounded-lg transition-colors">
+                  <i class="ph ph-arrows-clockwise"></i>
+                  Refresh
+                </button>
+                <div class="w-px h-3 bg-ink/10"></div>
+                <button class="text-xs font-medium text-negative/80 hover:text-negative flex items-center gap-1.5 px-2 py-1 hover:bg-negative/5 rounded-lg transition-colors">
+                  <i class="ph ph-plug"></i>
+                  Disconnect
+                </button>
+              </div>
+            </div>
+
+            <!-- Account 2: Fidelity - Needs Re-Auth -->
+            <div class="glass-card rounded-2xl p-5 mb-4 relative overflow-hidden">
+              <!-- Warning stripe -->
+              <div class="absolute top-0 left-0 w-1 h-full bg-clay"></div>
+
+              <div class="flex justify-between items-start mb-4">
+                <div class="flex items-center gap-3">
+                  <div class="w-12 h-12 rounded-xl bg-[#128540]/10 flex items-center justify-center border border-[#128540]/20">
+                    <i class="ph-fill ph-bank text-[#128540] text-xl"></i>
+                  </div>
+                  <div>
+                    <h3 class="font-inter font-bold text-ink text-sm">Fidelity</h3>
+                    <p class="text-[10px] text-clay font-medium uppercase tracking-wide mt-0.5">Roth IRA</p>
+                  </div>
+                </div>
+                <div class="flex items-center gap-1.5 px-2.5 py-1 bg-clay/15 rounded-full border border-clay/20">
+                  <div class="w-1.5 h-1.5 rounded-full bg-clay"></div>
+                  <span class="text-[9px] font-bold text-clay uppercase tracking-wide">Re-Auth</span>
+                </div>
+              </div>
+
+              <div class="flex items-baseline justify-between mb-4 pb-4 border-b border-white/20">
+                <div>
+                  <p class="text-[9px] text-ink/50 font-bold uppercase tracking-wider mb-1">Account No.</p>
+                  <p class="font-mono text-sm text-ink font-medium">•••• •••• 3321</p>
+                </div>
+                <div class="text-right">
+                  <p class="text-[9px] text-ink/50 font-bold uppercase tracking-wider mb-1">Last Synced</p>
+                  <div class="flex items-center justify-end gap-1 text-clay">
+                    <i class="ph ph-warning text-xs"></i>
+                    <span class="text-xs font-mono">2 days ago</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex items-center justify-end gap-3">
+                <button class="text-xs font-bold text-white bg-clay hover:bg-clay/90 flex items-center gap-1.5 px-3 py-1.5 rounded-full shadow-sm transition-colors">
+                  <i class="ph-bold ph-arrow-right"></i>
+                  Fix Connection
+                </button>
+                <div class="w-px h-3 bg-ink/10"></div>
+                <button class="text-xs font-medium text-negative/80 hover:text-negative flex items-center gap-1.5 px-2 py-1 hover:bg-negative/5 rounded-lg transition-colors">
+                  <i class="ph ph-plug"></i>
+                  Disconnect
+                </button>
+              </div>
+            </div>
+
+            <!-- Account 3: Interactive Brokers - Error -->
+            <div class="glass-card rounded-2xl p-5 mb-4 relative overflow-hidden opacity-90">
+              <!-- Error stripe -->
+              <div class="absolute top-0 left-0 w-1 h-full bg-negative"></div>
+
+              <div class="flex justify-between items-start mb-4">
+                <div class="flex items-center gap-3">
+                  <div class="w-12 h-12 rounded-xl bg-ink/10 flex items-center justify-center border border-ink/10">
+                    <i class="ph-fill ph-globe text-ink text-xl"></i>
+                  </div>
+                  <div>
+                    <h3 class="font-inter font-bold text-ink text-sm">Interactive Brokers</h3>
+                    <p class="text-[10px] text-clay font-medium uppercase tracking-wide mt-0.5">Margin</p>
+                  </div>
+                </div>
+                <div class="flex items-center gap-1.5 px-2.5 py-1 bg-negative/10 rounded-full border border-negative/10">
+                  <div class="w-1.5 h-1.5 rounded-full bg-negative"></div>
+                  <span class="text-[9px] font-bold text-negative uppercase tracking-wide">Error</span>
+                </div>
+              </div>
+
+              <div class="flex items-baseline justify-between mb-4 pb-4 border-b border-white/20">
+                <div>
+                  <p class="text-[9px] text-ink/50 font-bold uppercase tracking-wider mb-1">Account No.</p>
+                  <p class="font-mono text-sm text-ink font-medium">•••• •••• 9901</p>
+                </div>
+                <div class="text-right">
+                  <p class="text-[9px] text-ink/50 font-bold uppercase tracking-wider mb-1">Last Synced</p>
+                  <div class="flex items-center justify-end gap-1 text-ink/60">
+                    <i class="ph ph-clock text-xs"></i>
+                    <span class="text-xs font-mono">Feb 14</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Error Message -->
+              <div class="bg-negative/5 p-3 rounded-xl mb-4 flex items-start gap-2 border border-negative/10">
+                <i class="ph-fill ph-warning-circle text-negative mt-0.5"></i>
+                <p class="text-[11px] text-ink leading-snug">Connection timed out. Please check your credentials on the broker website.</p>
+              </div>
+
+              <div class="flex items-center justify-end gap-3">
+                <button onclick="goTo('connection-issue')" class="text-xs font-medium text-clay hover:text-ink flex items-center gap-1.5 px-2 py-1 hover:bg-white/30 rounded-lg transition-colors">
+                  <i class="ph ph-arrows-clockwise"></i>
+                  Retry
+                </button>
+                <div class="w-px h-3 bg-ink/10"></div>
+                <button class="text-xs font-medium text-negative/80 hover:text-negative flex items-center gap-1.5 px-2 py-1 hover:bg-negative/5 rounded-lg transition-colors">
+                  <i class="ph ph-plug"></i>
+                  Remove
+                </button>
+              </div>
+            </div>
+
+            <!-- Connect Another Account Button -->
+            <button onclick="goTo('brokerage')" class="w-full bg-forest hover:bg-forest/90 text-paper rounded-2xl p-4 shadow-lg flex items-center justify-center gap-2 transition-all active:scale-[0.98] mt-4 mb-6">
+              <div class="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center">
+                <i class="ph-bold ph-plus text-sm"></i>
+              </div>
+              <span class="font-inter font-semibold text-sm">Connect Another Account</span>
+            </button>
+
+            <!-- Footer -->
+            <div class="text-center py-4">
+              <p class="text-[10px] text-ink/40 max-w-[200px] mx-auto leading-relaxed">
+                Your data is encrypted end-to-end. We never store your brokerage credentials.
+              </p>
+            </div>
+          </main>
+        </div>
+
+        <!-- ========== CHOOSE PLAN ========== -->
+        <div id="choose-plan" class="screen bg-transparent text-ink flex-col h-full w-full relative overflow-hidden">
+          <!-- Header -->
+          <div class="pt-16 px-6 pb-4">
+            <div class="flex items-center justify-between mb-6">
+              <button onclick="goTo('profile')" class="w-10 h-10 glass rounded-xl flex items-center justify-center active:scale-95 transition-transform">
+                <i class="ph ph-x text-xl text-ink"></i>
+              </button>
+              <h1 class="font-fraunces text-lg font-semibold text-ink">Choose Plan</h1>
+              <div class="w-10 h-10"></div>
+            </div>
+
+            <!-- Hero Text -->
+            <div class="text-center mb-6">
+              <h2 class="font-fraunces text-2xl font-bold text-ink leading-tight mb-2">Level up your trading strategy</h2>
+              <p class="text-ink/60 text-sm max-w-[280px] mx-auto">Access institutional-grade insights and copy top-performing traders.</p>
+            </div>
+          </div>
+
+          <!-- Scrollable Content -->
+          <main class="flex-1 px-6 pb-40 overflow-auto">
+            <!-- Plans Carousel -->
+            <div class="flex gap-3 overflow-x-auto pb-4 mb-6 -mx-6 px-6" style="-ms-overflow-style: none; scrollbar-width: none;">
+              <!-- Free Plan -->
+              <div class="flex-none w-[160px] glass-card rounded-2xl p-5">
+                <p class="text-[10px] font-bold text-clay uppercase tracking-wider mb-2">Free</p>
+                <div class="flex items-baseline gap-1 mb-4">
+                  <span class="text-2xl font-fraunces font-bold text-ink">$0</span>
+                  <span class="text-xs text-ink/40">/mo</span>
+                </div>
+                <ul class="space-y-3">
+                  <li class="flex items-start gap-2 text-xs text-ink/70">
+                    <i class="ph ph-check-circle text-forest mt-0.5"></i>
+                    <span>Basic charts</span>
+                  </li>
+                  <li class="flex items-start gap-2 text-xs text-ink/70">
+                    <i class="ph ph-check-circle text-forest mt-0.5"></i>
+                    <span>3 Follows max</span>
+                  </li>
+                </ul>
+              </div>
+
+              <!-- Plus Plan (Popular) -->
+              <div class="flex-none w-[180px] bg-forest text-paper rounded-2xl p-5 relative shadow-xl">
+                <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-clay px-3 py-1 rounded-full">
+                  <span class="text-[9px] font-bold text-white uppercase tracking-widest">Most Popular</span>
+                </div>
+                <p class="text-[10px] font-bold text-white/60 uppercase tracking-wider mb-2 pt-1">Plus</p>
+                <div class="flex items-baseline gap-1 mb-4">
+                  <span class="text-2xl font-fraunces font-bold text-white">$19</span>
+                  <span class="text-xs text-white/40">/mo</span>
+                </div>
+                <ul class="space-y-3">
+                  <li class="flex items-start gap-2 text-xs text-white/90">
+                    <i class="ph ph-check-circle text-clay mt-0.5"></i>
+                    <span>Pro real-time data</span>
+                  </li>
+                  <li class="flex items-start gap-2 text-xs text-white/90">
+                    <i class="ph ph-check-circle text-clay mt-0.5"></i>
+                    <span>Unlimited Follows</span>
+                  </li>
+                  <li class="flex items-start gap-2 text-xs text-white/90">
+                    <i class="ph ph-check-circle text-clay mt-0.5"></i>
+                    <span>Auto-investing</span>
+                  </li>
+                </ul>
+              </div>
+
+              <!-- Pro Plan -->
+              <div class="flex-none w-[160px] glass-card rounded-2xl p-5">
+                <p class="text-[10px] font-bold text-clay uppercase tracking-wider mb-2">Pro</p>
+                <div class="flex items-baseline gap-1 mb-4">
+                  <span class="text-2xl font-fraunces font-bold text-ink">$49</span>
+                  <span class="text-xs text-ink/40">/mo</span>
+                </div>
+                <ul class="space-y-3">
+                  <li class="flex items-start gap-2 text-xs text-ink/70">
+                    <i class="ph ph-check-circle text-forest mt-0.5"></i>
+                    <span>Custom API Access</span>
+                  </li>
+                  <li class="flex items-start gap-2 text-xs text-ink/70">
+                    <i class="ph ph-check-circle text-forest mt-0.5"></i>
+                    <span>Private Discord</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <!-- Compare Features -->
+            <div class="mb-6">
+              <h3 class="font-fraunces text-base text-ink font-semibold mb-4 px-1">Compare Features</h3>
+              <div class="glass-card rounded-2xl overflow-hidden">
+                <table class="w-full text-left text-xs">
+                  <thead>
+                    <tr class="border-b border-white/20">
+                      <th class="p-4 font-bold text-clay uppercase tracking-tighter text-[10px]">Feature</th>
+                      <th class="p-4 text-center font-bold text-[10px]">Free</th>
+                      <th class="p-4 text-center font-bold text-forest text-[10px]">Plus</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr class="border-b border-white/20">
+                      <td class="p-4 text-ink/80">Execution Speed</td>
+                      <td class="p-4 text-center text-ink/40">Standard</td>
+                      <td class="p-4 text-center font-bold text-positive">Instant</td>
+                    </tr>
+                    <tr class="border-b border-white/20">
+                      <td class="p-4 text-ink/80">Analyst Reports</td>
+                      <td class="p-4 text-center"><i class="ph ph-minus text-ink/20"></i></td>
+                      <td class="p-4 text-center"><i class="ph ph-check text-forest font-bold"></i></td>
+                    </tr>
+                    <tr>
+                      <td class="p-4 text-ink/80">Tax Reporting</td>
+                      <td class="p-4 text-center"><i class="ph ph-minus text-ink/20"></i></td>
+                      <td class="p-4 text-center"><i class="ph ph-check text-forest font-bold"></i></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Security Footer -->
+            <div class="flex flex-col items-center gap-3 py-4">
+              <div class="flex items-center gap-2 text-ink/40">
+                <i class="ph ph-shield-check text-lg"></i>
+                <span class="text-[11px] font-medium">Cancel anytime • Secure SSL checkout</span>
+              </div>
+              <div class="flex gap-4 opacity-40">
+                <i class="ph ph-credit-card text-xl"></i>
+                <i class="ph ph-apple-logo text-xl"></i>
+                <i class="ph ph-google-logo text-xl"></i>
+              </div>
+            </div>
+          </main>
+
+          <!-- Fixed Bottom CTA -->
+          <div class="absolute bottom-0 left-0 right-0 bg-paper/80 backdrop-blur-lg p-6 pb-10 border-t border-white/20">
+            <button class="w-full bg-forest text-paper py-4 rounded-2xl font-inter font-bold text-sm shadow-lg active:scale-[0.98] transition-transform flex items-center justify-center gap-2">
+              Start Free Trial
+              <i class="ph ph-arrow-right"></i>
+            </button>
+            <p class="text-[10px] text-center text-ink/40 mt-3">
+              By subscribing, you agree to our <span class="underline">Terms of Service</span>.
+            </p>
+          </div>
+        </div>
+
+        <!-- ========== CREATOR DASHBOARD ========== -->
+        <div id="creator-dashboard" class="screen bg-transparent text-ink flex-col h-full w-full relative overflow-hidden">
+          <!-- Header -->
+          <div class="pt-16 px-6 pb-4">
+            <div class="flex items-center justify-between">
+              <button onclick="goTo('profile')" class="w-10 h-10 glass rounded-xl flex items-center justify-center active:scale-95 transition-transform">
+                <i class="ph ph-user text-lg text-ink"></i>
+              </button>
+              <h1 class="font-fraunces text-lg font-semibold text-ink">Dashboard</h1>
+              <button class="w-10 h-10 glass rounded-xl flex items-center justify-center active:scale-95 transition-transform">
+                <i class="ph ph-bell text-lg text-ink"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Scrollable Content -->
+          <main class="flex-1 px-6 pb-32 overflow-auto">
+            <!-- Section Title -->
+            <div class="mb-4">
+              <h2 class="font-fraunces text-xl font-bold text-ink mb-1">Performance Metrics</h2>
+              <p class="text-ink/60 text-[11px]">Real-time data from your connected exchanges.</p>
+            </div>
+
+            <!-- Metrics Grid -->
+            <div class="grid grid-cols-2 gap-3 mb-5">
+              <!-- This Month - Links to Payouts -->
+              <div onclick="goTo('payouts')" class="glass-card rounded-xl p-4 flex flex-col justify-between h-[90px] cursor-pointer active:scale-[0.98] transition-all">
+                <div class="flex items-center justify-between">
+                  <span class="text-[9px] text-ink/50 font-bold uppercase tracking-wider">This Month</span>
+                  <i class="ph ph-trend-up text-positive text-sm"></i>
+                </div>
+                <div>
+                  <p class="text-xl font-fraunces font-bold text-ink leading-none">$4,280</p>
+                  <p class="text-[9px] text-positive font-medium mt-1">+12.4% vs last mo</p>
+                </div>
+              </div>
+
+              <!-- Total Copiers -->
+              <div class="glass-card rounded-xl p-4 flex flex-col justify-between h-[90px]">
+                <div class="flex items-center justify-between">
+                  <span class="text-[9px] text-ink/50 font-bold uppercase tracking-wider">Total Copiers</span>
+                  <i class="ph ph-users text-clay text-sm"></i>
+                </div>
+                <div>
+                  <p class="text-xl font-fraunces font-bold text-ink leading-none">1,247</p>
+                  <p class="text-[9px] text-ink/40 font-medium mt-1">Top 2% of traders</p>
+                </div>
+              </div>
+
+              <!-- dopl. Score - Full Width -->
+              <div class="col-span-2 bg-forest text-paper rounded-xl p-4 flex flex-col justify-between h-[90px] shadow-lg">
+                <div class="flex items-center justify-between">
+                  <span class="text-[9px] text-white/50 font-bold uppercase tracking-wider">dopl. Score</span>
+                  <i class="ph ph-info text-white/30 text-sm"></i>
+                </div>
+                <div class="flex items-end justify-between">
+                  <div>
+                    <p class="text-2xl font-fraunces font-bold text-white leading-none">87<span class="text-[10px] text-white/40 ml-0.5">/100</span></p>
+                    <p class="text-[9px] text-clay font-bold mt-1">ELITE STATUS</p>
+                  </div>
+                  <div class="flex gap-1 items-end">
+                    <div class="w-1.5 h-4 bg-clay rounded-full"></div>
+                    <div class="w-1.5 h-6 bg-clay rounded-full"></div>
+                    <div class="w-1.5 h-8 bg-clay rounded-full"></div>
+                    <div class="w-1.5 h-5 bg-white/20 rounded-full"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Recent Comparisons -->
+            <div class="mb-5">
+              <h3 class="font-fraunces text-sm text-ink font-semibold mb-3">Recent Comparisons</h3>
+              <div class="glass-card rounded-xl overflow-hidden">
+                <table class="w-full text-left text-[10px]">
+                  <thead>
+                    <tr class="border-b border-white/20">
+                      <th class="p-3 font-bold text-clay uppercase tracking-tight">Metric</th>
+                      <th class="p-3 text-center font-bold">Avg.</th>
+                      <th class="p-3 text-center font-bold text-forest">You</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr class="border-b border-white/20">
+                      <td class="p-3 text-ink/80">Execution (ms)</td>
+                      <td class="p-3 text-center text-ink/40">420ms</td>
+                      <td class="p-3 text-center font-bold text-positive">12ms</td>
+                    </tr>
+                    <tr class="border-b border-white/20">
+                      <td class="p-3 text-ink/80">Win Rate</td>
+                      <td class="p-3 text-center text-ink/40">52%</td>
+                      <td class="p-3 text-center font-bold text-ink">68%</td>
+                    </tr>
+                    <tr>
+                      <td class="p-3 text-ink/80">Max Drawdown</td>
+                      <td class="p-3 text-center text-ink/40">12.4%</td>
+                      <td class="p-3 text-center font-bold text-ink">4.2%</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Upgrade Card -->
+            <div onclick="goTo('choose-plan')" class="glass-card rounded-xl p-4 border border-clay/20 bg-clay/10 cursor-pointer active:scale-[0.98] transition-all">
+              <div class="flex items-center gap-4">
+                <div class="w-11 h-11 rounded-full bg-clay flex items-center justify-center flex-none shadow-md">
+                  <i class="ph ph-crown text-white text-xl"></i>
+                </div>
+                <div class="flex-1">
+                  <p class="text-sm font-bold text-ink">Upgrade to Plus</p>
+                  <p class="text-[10px] text-ink/60">Unlock Pro data & unlimited follows.</p>
+                </div>
+                <div class="w-9 h-9 rounded-full bg-forest text-paper flex items-center justify-center shadow-md">
+                  <i class="ph ph-caret-right"></i>
+                </div>
+              </div>
+            </div>
+          </main>
+
+          <!-- Bottom Navigation -->
+          <nav class="absolute bottom-0 left-0 right-0 bg-ink/95 backdrop-blur-lg text-paper px-6 py-4 flex justify-around items-center border-t border-white/10">
+            <button class="flex flex-col items-center gap-1 opacity-100">
+              <i class="ph-fill ph-house-simple text-lg"></i>
+              <span class="text-[9px] font-medium tracking-wide">Home</span>
+            </button>
+            <button onclick="goTo('discover')" class="flex flex-col items-center gap-1 opacity-50">
+              <i class="ph ph-compass text-lg"></i>
+              <span class="text-[9px] font-medium tracking-wide">Discover</span>
+            </button>
+            <button onclick="goTo('leaderboard')" class="flex flex-col items-center gap-1 opacity-50">
+              <i class="ph ph-ranking text-lg"></i>
+              <span class="text-[9px] font-medium tracking-wide">Leaderboard</span>
+            </button>
+            <button onclick="goTo('profile')" class="flex flex-col items-center gap-1 opacity-50">
+              <i class="ph ph-user text-lg"></i>
+              <span class="text-[9px] font-medium tracking-wide">Profile</span>
+            </button>
+          </nav>
+        </div>
+
+        <!-- ========== EARNINGS ========== -->
+        <div id="payouts" class="screen bg-transparent text-ink flex-col h-full w-full relative overflow-hidden">
+          <!-- Header -->
+          <div class="pt-16 px-6 pb-4">
+            <div class="flex items-center justify-between">
+              <button onclick="goTo('creator-dashboard')" class="w-10 h-10 glass rounded-xl flex items-center justify-center active:scale-95 transition-transform">
+                <i class="ph ph-caret-left text-xl text-ink"></i>
+              </button>
+              <h1 class="font-fraunces text-lg font-semibold text-ink">Earnings</h1>
+              <div class="w-10 h-10 flex items-center justify-center">
+                <i class="ph ph-info text-lg text-ink/40"></i>
+              </div>
+            </div>
+          </div>
+
+          <!-- Scrollable Content -->
+          <main class="flex-1 px-6 pb-40 overflow-auto">
+            <!-- Balance Summary -->
+            <div class="text-center mb-8">
+              <p class="text-[10px] text-ink/40 font-bold uppercase tracking-widest mb-1">Available Balance</p>
+              <h2 class="font-fraunces text-5xl font-bold text-ink leading-tight mb-4">$4,280</h2>
+              <div class="flex items-center justify-center gap-6">
+                <div class="text-center">
+                  <p class="text-[10px] text-ink/40 uppercase font-bold">Pending</p>
+                  <p class="font-fraunces text-xl font-medium text-ink/60">$0</p>
+                </div>
+                <div class="w-px h-8 bg-ink/10"></div>
+                <div class="text-center">
+                  <p class="text-[10px] text-ink/40 uppercase font-bold">Last Payout</p>
+                  <p class="font-fraunces text-xl font-medium text-ink/60">$1,150</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Payment Method Card -->
+            <div class="glass-card rounded-2xl p-5 mb-8 flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <div class="w-11 h-11 rounded-full bg-paper flex items-center justify-center">
+                  <i class="ph ph-bank text-forest text-xl"></i>
+                </div>
+                <div>
+                  <p class="text-sm font-bold text-ink">Chase Bank •••• 8821</p>
+                  <p class="text-[10px] text-ink/40">Primary Payout Method</p>
+                </div>
+              </div>
+              <button class="text-xs font-bold text-clay underline">Update</button>
+            </div>
+
+            <!-- Payout History -->
+            <div class="mb-8">
+              <div class="flex items-end justify-between mb-4 px-1">
+                <h3 class="font-fraunces text-base text-ink font-semibold">Payout History</h3>
+                <button class="text-[10px] font-bold text-ink/40 uppercase tracking-wider">View All</button>
+              </div>
+              <div class="glass-card rounded-2xl overflow-hidden">
+                <table class="w-full text-left text-xs">
+                  <thead>
+                    <tr class="border-b border-white/20">
+                      <th class="p-4 font-bold text-ink/40 uppercase tracking-tight text-[10px]">Date</th>
+                      <th class="p-4 font-bold text-ink/40 uppercase tracking-tight text-[10px]">Amount</th>
+                      <th class="p-4 font-bold text-ink/40 uppercase tracking-tight text-[10px] text-right">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr class="border-b border-white/20">
+                      <td class="p-4">
+                        <p class="font-medium text-ink">Oct 12, 2023</p>
+                        <p class="text-[10px] text-ink/40">ACH Transfer</p>
+                      </td>
+                      <td class="p-4 font-fraunces font-bold text-ink">$1,150.00</td>
+                      <td class="p-4 text-right">
+                        <span class="bg-positive/10 text-positive text-[9px] font-bold px-2 py-0.5 rounded-full">Completed</span>
+                      </td>
+                    </tr>
+                    <tr class="border-b border-white/20">
+                      <td class="p-4">
+                        <p class="font-medium text-ink">Sep 28, 2023</p>
+                        <p class="text-[10px] text-ink/40">ACH Transfer</p>
+                      </td>
+                      <td class="p-4 font-fraunces font-bold text-ink">$890.00</td>
+                      <td class="p-4 text-right">
+                        <span class="bg-positive/10 text-positive text-[9px] font-bold px-2 py-0.5 rounded-full">Completed</span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="p-4">
+                        <p class="font-medium text-ink">Sep 14, 2023</p>
+                        <p class="text-[10px] text-ink/40">ACH Transfer</p>
+                      </td>
+                      <td class="p-4 font-fraunces font-bold text-ink">$2,400.00</td>
+                      <td class="p-4 text-right">
+                        <span class="bg-positive/10 text-positive text-[9px] font-bold px-2 py-0.5 rounded-full">Completed</span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </main>
+
+          <!-- Fixed Bottom CTA -->
+          <div class="absolute bottom-0 left-0 right-0 bg-paper/80 backdrop-blur-lg p-6 pb-10 border-t border-white/20">
+            <button class="w-full bg-forest text-paper py-4 rounded-2xl font-inter font-bold text-sm shadow-lg active:scale-[0.98] transition-transform flex items-center justify-center gap-2">
+              Request Payout
+              <i class="ph ph-arrow-right"></i>
+            </button>
+            <p class="text-[10px] text-center text-ink/40 mt-3">
+              Payouts are typically processed within <span class="font-bold">1–3 business days</span>.
+            </p>
+          </div>
+        </div>
+
+        <!-- ========== CONNECTION ISSUE ========== -->
+        <div id="connection-issue" class="screen bg-transparent text-ink flex-col h-full w-full relative overflow-hidden">
+          <!-- Full Screen Centered Content -->
+          <main class="flex-1 flex flex-col items-center justify-center px-8 text-center">
+            <!-- Icon Container -->
+            <div class="w-24 h-24 bg-ink rounded-full flex items-center justify-center mb-8 shadow-[0_12px_24px_rgba(13,38,31,0.15)] animate-scale-in">
+              <svg viewBox="0 0 24 24" class="w-11 h-11" stroke="#FFD54F" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none">
+                <path d="M18.36 6.64L16.95 8.05M5.64 19.36L4.23 20.77M15 2l-.5 3.5M9.5 18.5L9 22M2 15l3.5-.5M18.5 9.5L22 9M12 9l.01-.01"></path>
+                <path d="M8.47 10.64L7.06 12.05M14.12 16.29L12.71 17.7"></path>
+              </svg>
+            </div>
+
+            <!-- Heading -->
+            <h1 class="font-fraunces text-[28px] font-medium text-ink leading-tight tracking-tight mb-4">
+              We've encountered a slight pause.
+            </h1>
+
+            <!-- Status Badge -->
+            <div class="bg-[#B38600]/10 border border-[#B38600]/20 px-5 py-2.5 rounded-full mb-10">
+              <span class="font-fraunces text-sm italic text-[#B38600] font-medium">
+                Your portfolio sync is momentarily interrupted
+              </span>
+            </div>
+
+            <!-- Spacer to push buttons down -->
+            <div class="flex-1"></div>
+
+            <!-- Action Buttons -->
+            <div class="w-full space-y-3 mb-8">
+              <button id="retryBtn" onclick="handleRetryConnection()" class="w-full bg-ink text-paper py-5 rounded-2xl font-inter font-semibold text-base shadow-[0_10px_30px_rgba(13,38,31,0.2)] active:scale-[0.98] transition-all">
+                Retry Connection
+              </button>
+              <button onclick="goTo('home')" class="w-full bg-transparent text-ink border-2 border-ink py-4 rounded-2xl font-inter font-semibold text-base active:scale-[0.98] transition-all">
+                Return to Portfolio
+              </button>
+            </div>
+          </main>
+        </div>
+
+        <!-- ========== HOME LOADING STATE ========== -->
+        <div id="home-loading" class="screen bg-transparent text-ink flex-col h-full w-full relative overflow-hidden">
+          <!-- Header Skeleton -->
+          <header class="px-6 pt-16 pb-4 flex justify-between items-center z-20 flex-none">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 rounded-full skeleton"></div>
+              <div>
+                <div class="skeleton skeleton-text-sm w-16 mb-2"></div>
+                <div class="skeleton skeleton-text w-24"></div>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <div class="w-9 h-9 rounded-full skeleton"></div>
+              <div class="w-9 h-9 rounded-full skeleton"></div>
+            </div>
+          </header>
+
+          <main class="flex-1 overflow-hidden pb-28">
+            <!-- Equity Card Skeleton -->
+            <section class="px-6 mb-6">
+              <div class="skeleton skeleton-card h-52 w-full"></div>
+            </section>
+
+            <!-- Active Strategies Skeleton -->
+            <section class="mb-8 skeleton-stagger">
+              <div class="flex justify-between items-center px-6 mb-4">
+                <div class="skeleton skeleton-text-lg w-36"></div>
+                <div class="skeleton skeleton-text-sm w-16"></div>
+              </div>
+              <div class="space-y-3 px-6">
+                <div class="skeleton skeleton-card h-28 w-full"></div>
+                <div class="skeleton skeleton-card h-28 w-full"></div>
+              </div>
+            </section>
+
+            <!-- Activity Skeleton -->
+            <section class="px-6 skeleton-stagger">
+              <div class="skeleton skeleton-text-lg w-32 mb-4"></div>
+              <div class="space-y-3">
+                <div class="skeleton skeleton-card h-16 w-full"></div>
+                <div class="skeleton skeleton-card h-16 w-full"></div>
+              </div>
+            </section>
+          </main>
+
+          <!-- Bottom Nav Skeleton -->
+          <nav class="absolute bottom-4 left-4 right-4 glass-strong rounded-[26px] flex justify-around py-2.5 z-50">
+            <div class="flex flex-col items-center gap-1">
+              <div class="w-10 h-10 skeleton rounded-2xl"></div>
+              <div class="skeleton skeleton-text-sm w-8"></div>
+            </div>
+            <div class="flex flex-col items-center gap-1">
+              <div class="w-10 h-10 skeleton rounded-2xl"></div>
+              <div class="skeleton skeleton-text-sm w-10"></div>
+            </div>
+            <div class="flex flex-col items-center gap-1">
+              <div class="w-10 h-10 skeleton rounded-2xl"></div>
+              <div class="skeleton skeleton-text-sm w-14"></div>
+            </div>
+            <div class="flex flex-col items-center gap-1">
+              <div class="w-10 h-10 skeleton rounded-2xl"></div>
+              <div class="skeleton skeleton-text-sm w-8"></div>
+            </div>
+          </nav>
+        </div>
+
+        <!-- ========== EMPTY PORTFOLIO STATE ========== -->
+        <div id="empty-portfolio" class="screen bg-transparent text-ink flex-col h-full w-full relative overflow-hidden">
+          <!-- Header -->
+          <header class="px-6 pt-16 pb-4 flex justify-between items-center z-20 flex-none">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 rounded-full border border-white/30 overflow-hidden glass">
+                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&h=100" alt="Profile" class="w-full h-full object-cover">
+              </div>
+              <div>
+                <p class="text-[10px] text-clay font-bold uppercase tracking-widest leading-none mb-1">Portfolio</p>
+                <h1 class="font-fraunces text-base font-semibold text-ink leading-none">Ahmed Al-Rashid</h1>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <button class="w-9 h-9 flex items-center justify-center glass rounded-full"><i class="ph ph-magnifying-glass text-lg text-ink"></i></button>
+              <button class="w-9 h-9 flex items-center justify-center glass rounded-full"><i class="ph ph-bell text-lg text-ink"></i></button>
+            </div>
+          </header>
+
+          <!-- Empty State Content -->
+          <main class="flex-1 flex flex-col items-center justify-center px-8 text-center pb-20">
+            <div class="empty-icon w-20 h-20 glass-strong rounded-3xl flex items-center justify-center mb-6">
+              <i class="ph-light ph-chart-line-up text-4xl text-forest"></i>
+            </div>
+            <h2 class="font-fraunces text-2xl font-semibold text-ink mb-3">No strategies yet</h2>
+            <p class="text-sm text-ink/60 mb-8 max-w-[260px]">Start copying top traders to build your portfolio and watch it grow.</p>
+            <button onclick="goTo('discover')" class="bg-ink text-paper px-8 py-4 rounded-2xl font-semibold text-base shadow-lg btn-press flex items-center gap-2">
+              <i class="ph ph-compass text-xl"></i>
+              Discover Traders
+            </button>
+          </main>
+
+          <!-- Bottom Nav -->
+          <nav class="absolute bottom-4 left-4 right-4 glass-strong rounded-[26px] flex justify-around py-2.5 z-50 shadow-lg">
+            <button class="flex flex-col items-center gap-0.5 text-[10px] text-ink nav-item">
+              <div class="w-10 h-10 flex items-center justify-center rounded-2xl bg-ink text-paper shadow-md"><i class="ph-fill ph-house text-xl"></i></div>
+              <span class="font-medium">Home</span>
+            </button>
+            <button onclick="goTo('discover')" class="flex flex-col items-center gap-0.5 text-[10px] text-ink/40 nav-item">
+              <div class="w-10 h-10 flex items-center justify-center rounded-2xl"><i class="ph ph-compass text-xl"></i></div>
+              <span>Discover</span>
+            </button>
+            <button onclick="goTo('leaderboard')" class="flex flex-col items-center gap-0.5 text-[10px] text-ink/40 nav-item">
+              <div class="w-10 h-10 flex items-center justify-center rounded-2xl"><i class="ph ph-ranking text-xl"></i></div>
+              <span>Leaderboard</span>
+            </button>
+            <button onclick="goTo('profile')" class="flex flex-col items-center gap-0.5 text-[10px] text-ink/40 nav-item">
+              <div class="w-10 h-10 flex items-center justify-center rounded-2xl"><i class="ph ph-user text-xl"></i></div>
+              <span>Profile</span>
+            </button>
+          </nav>
+        </div>
+
+        <!-- ========== EMPTY SUBSCRIPTIONS STATE ========== -->
+        <div id="empty-subscriptions" class="screen bg-transparent text-ink flex-col h-full w-full relative overflow-hidden">
+          <!-- Header -->
+          <div class="pt-16 px-6 pb-6">
+            <div class="flex items-center gap-4 mb-6">
+              <button onclick="goTo('profile')" class="w-10 h-10 glass rounded-xl flex items-center justify-center btn-press">
+                <i class="ph ph-arrow-left text-xl text-ink"></i>
+              </button>
+              <h1 class="font-fraunces text-2xl font-semibold text-ink">My Subscriptions</h1>
+            </div>
+          </div>
+
+          <!-- Empty State -->
+          <main class="flex-1 flex flex-col items-center justify-center px-8 text-center">
+            <div class="empty-icon w-20 h-20 glass-strong rounded-3xl flex items-center justify-center mb-6">
+              <i class="ph-light ph-users-three text-4xl text-clay"></i>
+            </div>
+            <h2 class="font-fraunces text-2xl font-semibold text-ink mb-3">No subscriptions</h2>
+            <p class="text-sm text-ink/60 mb-8 max-w-[260px]">You haven't subscribed to any creators yet. Find top performers to copy their trades.</p>
+            <button onclick="goTo('discover')" class="bg-ink text-paper px-8 py-4 rounded-2xl font-semibold text-base shadow-lg btn-press flex items-center gap-2">
+              <i class="ph ph-magnifying-glass text-xl"></i>
+              Find Creators
+            </button>
+          </main>
+        </div>
+
+        <!-- ========== EMPTY ACTIVITY STATE ========== -->
+        <div id="empty-activity" class="screen bg-transparent text-ink flex-col h-full w-full relative overflow-hidden">
+          <!-- Header -->
+          <header class="px-6 pt-16 pb-2">
+            <button onclick="goTo('home')" class="flex items-center gap-2 text-ink/70 mb-6 btn-press">
+              <svg width="18" height="18" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" fill="none">
+                <path d="M19 12H5M12 19l-7-7 7-7"></path>
+              </svg>
+              <span class="text-sm font-medium">Overview</span>
+            </button>
+            <h1 class="font-fraunces text-3xl font-semibold text-ink mb-1">Activity</h1>
+            <p class="text-sm text-ink/60">Latest trade mirrors and allocations.</p>
+          </header>
+
+          <!-- Empty State -->
+          <main class="flex-1 flex flex-col items-center justify-center px-8 text-center">
+            <div class="empty-icon w-20 h-20 glass-strong rounded-3xl flex items-center justify-center mb-6">
+              <i class="ph-light ph-lightning text-4xl text-forest"></i>
+            </div>
+            <h2 class="font-fraunces text-2xl font-semibold text-ink mb-3">No activity yet</h2>
+            <p class="text-sm text-ink/60 mb-8 max-w-[260px]">Once you start copying traders, your mirrored trades will appear here.</p>
+            <button onclick="goTo('discover')" class="bg-ink text-paper px-8 py-4 rounded-2xl font-semibold text-base shadow-lg btn-press">
+              Get Started
+            </button>
+          </main>
+        </div>
+
+        <!-- ========== DISCOVER LOADING STATE ========== -->
+        <div id="discover-loading" class="screen bg-transparent text-ink flex-col h-full w-full relative overflow-hidden">
+          <!-- Header Skeleton -->
+          <div class="pt-16 px-6 pb-4">
+            <div class="skeleton skeleton-text-lg w-32 mb-4"></div>
+            <div class="flex gap-3">
+              <div class="flex-1 skeleton h-12 rounded-2xl"></div>
+              <div class="w-12 h-12 skeleton rounded-2xl"></div>
+            </div>
+          </div>
+
+          <!-- Filter Pills Skeleton -->
+          <div class="px-6 pb-4 flex gap-2">
+            <div class="skeleton h-9 w-16 rounded-full"></div>
+            <div class="skeleton h-9 w-20 rounded-full"></div>
+            <div class="skeleton h-9 w-18 rounded-full"></div>
+            <div class="skeleton h-9 w-16 rounded-full"></div>
+          </div>
+
+          <main class="flex-1 overflow-hidden pb-28">
+            <!-- Top Performers Skeleton -->
+            <section>
+              <div class="px-6 pb-4 flex justify-between items-baseline">
+                <div class="skeleton skeleton-text-lg w-36"></div>
+                <div class="skeleton skeleton-text-sm w-14"></div>
+              </div>
+              <div class="flex gap-4 px-6 pb-6">
+                <div class="skeleton skeleton-card w-64 h-48 flex-none"></div>
+                <div class="skeleton skeleton-card w-64 h-48 flex-none"></div>
+              </div>
+            </section>
+
+            <!-- All Creators Skeleton -->
+            <section class="px-6 skeleton-stagger">
+              <div class="skeleton skeleton-text-lg w-28 mb-4"></div>
+              <div class="space-y-3">
+                <div class="skeleton skeleton-card h-20 w-full"></div>
+                <div class="skeleton skeleton-card h-20 w-full"></div>
+                <div class="skeleton skeleton-card h-20 w-full"></div>
+              </div>
+            </section>
+          </main>
+
+          <!-- Bottom Nav Skeleton -->
+          <nav class="absolute bottom-4 left-4 right-4 glass-strong rounded-[26px] flex justify-around py-2.5 z-50">
+            <div class="flex flex-col items-center gap-1">
+              <div class="w-10 h-10 skeleton rounded-2xl"></div>
+              <div class="skeleton skeleton-text-sm w-8"></div>
+            </div>
+            <div class="flex flex-col items-center gap-1">
+              <div class="w-10 h-10 skeleton rounded-2xl"></div>
+              <div class="skeleton skeleton-text-sm w-10"></div>
+            </div>
+            <div class="flex flex-col items-center gap-1">
+              <div class="w-10 h-10 skeleton rounded-2xl"></div>
+              <div class="skeleton skeleton-text-sm w-14"></div>
+            </div>
+            <div class="flex flex-col items-center gap-1">
+              <div class="w-10 h-10 skeleton rounded-2xl"></div>
+              <div class="skeleton skeleton-text-sm w-8"></div>
+            </div>
+          </nav>
+        </div>
+
+      </div>
+
+      <!-- Home indicator (hidden on mobile) -->
+      <div class="home-indicator absolute bottom-[12px] left-1/2 -translate-x-1/2 w-[140px] h-[5px] bg-white/30 rounded-full"></div>
+    </div>
+  </div>
+
+  <script>
+    let riskAccepted = false;
+    let currentScreen = 'splash';
+    let navigationHistory = ['splash'];
+    let selectedFund = null;
+
+    // ===== FUNDS/TRADERS DATA =====
+    const funds = {
+      'momentum-stocks': {
+        id: 'momentum-stocks',
+        fundName: 'Momentum Stocks',
+        creatorName: 'StockTalk',
+        creatorTitle: 'Top Analyst',
+        image: '../copilot-landing/images/stocktalk.jpg',
+        verified: true,
+        return: '+727%',
+        winRate: '74%',
+        risk: '7/10',
+        riskColor: 'red',
+        copiers: '804',
+        about: 'Our flagship momentum strategy identifies stocks with strong price acceleration and volume breakouts. StockTalk\'s proprietary signals have consistently outperformed the market by capturing major moves in growth stocks before they become mainstream picks.',
+        holdings: [
+          { symbol: 'NBIS', name: 'Nebius Group', price: '$38.20', return: '+245%', allocation: '8%', positive: true },
+          { symbol: 'KTOS', name: 'Kratos Defense', price: '$28.45', return: '+187%', allocation: '8%', positive: true },
+          { symbol: 'LEU', name: 'Centrus Energy', price: '$68.90', return: '+156%', allocation: '7%', positive: true },
+          { symbol: 'HOOD', name: 'Robinhood', price: '$24.30', return: '+142%', allocation: '7%', positive: true },
+          { symbol: 'TSLA', name: 'Tesla Inc', price: '$248.50', return: '+89%', allocation: '6%', positive: true },
+          { symbol: 'AMZN', name: 'Amazon', price: '$178.50', return: '+52%', allocation: '6%', positive: true },
+          { symbol: 'GME', name: 'GameStop', price: '$22.80', return: '+78%', allocation: '6%', positive: true },
+          { symbol: 'HII', name: 'Huntington Ingalls', price: '$245.60', return: '+34%', allocation: '5%', positive: true },
+          { symbol: 'VIAV', name: 'Viavi Solutions', price: '$10.20', return: '+67%', allocation: '5%', positive: true },
+          { symbol: 'OSS', name: 'One Stop Systems', price: '$3.45', return: '+124%', allocation: '5%', positive: true },
+          { symbol: 'AMKR', name: 'Amkor Technology', price: '$32.10', return: '+45%', allocation: '5%', positive: true },
+          { symbol: 'ENS', name: 'EnerSys', price: '$98.40', return: '+28%', allocation: '5%', positive: true },
+          { symbol: 'PANL', name: 'Pangaea Logistics', price: '$6.80', return: '+56%', allocation: '4%', positive: true },
+          { symbol: 'PLPC', name: 'Preformed Line', price: '$142.30', return: '+38%', allocation: '4%', positive: true },
+          { symbol: 'GLDD', name: 'Great Lakes Dredge', price: '$11.20', return: '+92%', allocation: '4%', positive: true },
+          { symbol: 'THR', name: 'Thermon Group', price: '$28.90', return: '+41%', allocation: '4%', positive: true },
+          { symbol: 'SYNA', name: 'Synaptics', price: '$85.40', return: '+23%', allocation: '4%', positive: true }
+        ]
+      },
+      'energy-basket': {
+        id: 'energy-basket',
+        fundName: 'Energy Basket',
+        creatorName: 'StockTalk',
+        creatorTitle: 'Top Analyst',
+        image: '../copilot-landing/images/stocktalk.jpg',
+        verified: true,
+        return: '+48.3%',
+        winRate: '69%',
+        risk: '5/10',
+        riskColor: 'orange',
+        copiers: '1.2k',
+        about: 'A diversified basket of traditional and renewable energy plays. This portfolio balances oil & gas majors with emerging clean energy leaders, positioning for both current cash flows and the energy transition.',
+        holdings: [
+          { symbol: 'XOM', name: 'Exxon Mobil', price: '$104.20', return: '+28%', allocation: '20%', positive: true },
+          { symbol: 'CVX', name: 'Chevron', price: '$148.90', return: '+19%', allocation: '18%', positive: true },
+          { symbol: 'ENPH', name: 'Enphase Energy', price: '$128.40', return: '+45%', allocation: '15%', positive: true },
+          { symbol: 'FSLR', name: 'First Solar', price: '$178.20', return: '+67%', allocation: '12%', positive: true },
+          { symbol: 'OXY', name: 'Occidental', price: '$58.30', return: '+22%', allocation: '10%', positive: true }
+        ]
+      },
+      'photon-capital': {
+        id: 'photon-capital',
+        fundName: 'Photon Capital',
+        creatorName: 'Marcus Webb',
+        creatorTitle: 'Quantitative Strategist',
+        image: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=800&auto=format&fit=crop',
+        verified: true,
+        return: '+89.4%',
+        winRate: '71%',
+        risk: '5/10',
+        riskColor: 'orange',
+        copiers: '2.1k',
+        about: 'Photon Capital employs a systematic approach combining fundamental analysis with quantitative signals. Specializing in mid-cap growth stocks with strong momentum characteristics and institutional accumulation patterns.',
+        holdings: [
+          { symbol: 'POET', name: 'POET Technologies', price: '$8.45', return: '+312%', allocation: '10%', positive: true },
+          { symbol: 'IONQ', name: 'IonQ Inc', price: '$12.80', return: '+178%', allocation: '9%', positive: true },
+          { symbol: 'AVGO', name: 'Broadcom Inc', price: '$1,245.80', return: '+89%', allocation: '8%', positive: true },
+          { symbol: 'COHR', name: 'Coherent Corp', price: '$68.90', return: '+67%', allocation: '8%', positive: true },
+          { symbol: 'LITE', name: 'Lumentum', price: '$52.30', return: '+54%', allocation: '7%', positive: true },
+          { symbol: 'CRDO', name: 'Credo Technology', price: '$28.40', return: '+145%', allocation: '7%', positive: true },
+          { symbol: 'GLW', name: 'Corning Inc', price: '$35.60', return: '+32%', allocation: '7%', positive: true },
+          { symbol: 'GFS', name: 'GlobalFoundries', price: '$48.20', return: '+28%', allocation: '6%', positive: true },
+          { symbol: 'SNPS', name: 'Synopsys', price: '$485.40', return: '+42%', allocation: '6%', positive: true },
+          { symbol: 'FORM', name: 'FormFactor', price: '$42.80', return: '+56%', allocation: '6%', positive: true },
+          { symbol: 'TSEM', name: 'Tower Semi', price: '$38.90', return: '+34%', allocation: '5%', positive: true },
+          { symbol: 'INDI', name: 'indie Semiconductor', price: '$6.20', return: '+78%', allocation: '5%', positive: true },
+          { symbol: 'AEHR', name: 'Aehr Test Systems', price: '$18.40', return: '-12%', allocation: '5%', positive: false },
+          { symbol: 'ALMU', name: 'Alumis Inc', price: '$14.60', return: '+23%', allocation: '5%', positive: true },
+          { symbol: 'SNDK', name: 'SanDisk', price: '$52.80', return: '+18%', allocation: '4%', positive: true }
+        ]
+      },
+      'nancy-pelosi': {
+        id: 'nancy-pelosi',
+        fundName: 'Nancy Pelosi Tracker',
+        creatorName: 'dopl.',
+        creatorTitle: 'Official Tracker',
+        image: 'https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?q=80&w=800&auto=format&fit=crop',
+        verified: true,
+        return: '+65.2%',
+        winRate: '72%',
+        risk: '6/10',
+        riskColor: 'orange',
+        copiers: '5.4k',
+        about: 'Track the publicly disclosed stock trades of Nancy Pelosi. This portfolio mirrors her reported positions, updated within 48 hours of public filings. One of the most followed political trading trackers.',
+        holdings: [
+          { symbol: 'NVDA', name: 'NVIDIA Corp', price: '$485.20', return: '+180%', allocation: '14%', positive: true },
+          { symbol: 'GOOG', name: 'Alphabet', price: '$175.40', return: '+45%', allocation: '12%', positive: true },
+          { symbol: 'AMZN', name: 'Amazon', price: '$178.50', return: '+52%', allocation: '11%', positive: true },
+          { symbol: 'AVGO', name: 'Broadcom Inc', price: '$1,245.80', return: '+89%', allocation: '10%', positive: true },
+          { symbol: 'MSFT', name: 'Microsoft', price: '$380.45', return: '+45%', allocation: '10%', positive: true },
+          { symbol: 'TSLA', name: 'Tesla Inc', price: '$248.50', return: '+67%', allocation: '9%', positive: true },
+          { symbol: 'CRWD', name: 'CrowdStrike', price: '$312.50', return: '+42%', allocation: '9%', positive: true },
+          { symbol: 'VST', name: 'Vistra Corp', price: '$89.40', return: '+156%', allocation: '9%', positive: true },
+          { symbol: 'TEM', name: 'Tempus AI', price: '$52.30', return: '+78%', allocation: '8%', positive: true },
+          { symbol: 'AB', name: 'AllianceBernstein', price: '$35.80', return: '+23%', allocation: '8%', positive: true }
+        ]
+      },
+      'michael-burry': {
+        id: 'michael-burry',
+        fundName: 'Michael Burry Tracker',
+        creatorName: 'dopl.',
+        creatorTitle: 'Official Tracker',
+        image: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?q=80&w=800&auto=format&fit=crop',
+        verified: true,
+        return: '+38.7%',
+        winRate: '64%',
+        risk: '8/10',
+        riskColor: 'red',
+        copiers: '8.2k',
+        about: 'Mirror the 13F filings of Scion Asset Management, run by legendary investor Michael Burry of "The Big Short" fame. Known for contrarian bets and deep value plays. High conviction, concentrated positions.',
+        holdings: [
+          { symbol: 'PLTR', name: 'Palantir', price: '$24.80', return: '+145%', allocation: '15%', positive: true },
+          { symbol: 'NVDA', name: 'NVIDIA Corp', price: '$485.20', return: '+89%', allocation: '12%', positive: true },
+          { symbol: 'BTC', name: 'Bitcoin ETF', price: '$42,500', return: '+67%', allocation: '12%', positive: true },
+          { symbol: 'MOH', name: 'Molina Healthcare', price: '$328.40', return: '+34%', allocation: '10%', positive: true },
+          { symbol: 'LULU', name: 'Lululemon', price: '$298.60', return: '-8%', allocation: '10%', positive: false },
+          { symbol: 'GME', name: 'GameStop', price: '$22.80', return: '+78%', allocation: '9%', positive: true },
+          { symbol: 'HAL', name: 'Halliburton', price: '$32.40', return: '+18%', allocation: '9%', positive: true },
+          { symbol: 'PFE', name: 'Pfizer', price: '$28.90', return: '-12%', allocation: '8%', positive: false },
+          { symbol: 'SLM', name: 'SLM Corp', price: '$22.10', return: '+28%', allocation: '8%', positive: true },
+          { symbol: 'BRKR', name: 'Bruker Corp', price: '$68.40', return: '+15%', allocation: '7%', positive: true }
+        ]
+      },
+      'tut-capital': {
+        id: 'tut-capital',
+        fundName: 'Tut Capital',
+        creatorName: 'KingTut',
+        creatorTitle: 'Future Tech Specialist',
+        image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=800&auto=format&fit=crop',
+        verified: true,
+        return: '+112.5%',
+        winRate: '67%',
+        risk: '7/10',
+        riskColor: 'red',
+        copiers: '3.8k',
+        about: 'Tut Capital focuses on high-growth opportunities in space, eVTOL, autonomous vehicles, and next-gen technology. KingTut combines deep sector research with technical analysis to identify moonshot plays before they go mainstream.',
+        holdings: [
+          { symbol: 'ASTS', name: 'AST SpaceMobile', price: '$28.40', return: '+485%', allocation: '20%', positive: true },
+          { symbol: 'JOBY', name: 'Joby Aviation', price: '$6.80', return: '+124%', allocation: '18%', positive: true },
+          { symbol: 'LUNR', name: 'Intuitive Machines', price: '$12.40', return: '+267%', allocation: '18%', positive: true },
+          { symbol: 'AUR', name: 'Aurora Innovation', price: '$5.60', return: '+89%', allocation: '16%', positive: true },
+          { symbol: 'QS', name: 'QuantumScape', price: '$5.20', return: '+42%', allocation: '14%', positive: true },
+          { symbol: 'VELO', name: 'Velo3D', price: '$4.20', return: '+156%', allocation: '14%', positive: true }
+        ]
+      }
+    };
+
+    // Function to select a fund and update screens
+    function selectFund(fundId) {
+      selectedFund = funds[fundId];
+      if (!selectedFund) {
+        console.warn(`Fund "${fundId}" not found`);
+        return;
+      }
+      updateCreatorProfile();
+      updateCopyStrategy();
+      updateCopySuccess();
+      goTo('creator-profile');
+    }
+
+    function updateCreatorProfile() {
+      if (!selectedFund) return;
+      const f = selectedFund;
+
+      // Update hero image
+      document.getElementById('cp-hero-image').src = f.image;
+
+      // Update name and title
+      document.getElementById('cp-creator-name').textContent = f.creatorName;
+      document.getElementById('cp-creator-title').textContent = f.creatorTitle;
+      document.getElementById('cp-fund-name').textContent = f.fundName;
+
+      // Update stats
+      document.getElementById('cp-return').textContent = f.return;
+      document.getElementById('cp-winrate').textContent = f.winRate;
+      document.getElementById('cp-risk').textContent = f.risk;
+
+      // Update about
+      document.getElementById('cp-about').textContent = f.about;
+
+      // Update holdings (integrated list style)
+      const holdingsContainer = document.getElementById('cp-holdings');
+      holdingsContainer.innerHTML = f.holdings.map((h, i) => `
+        <div class="px-6 py-4 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-ink/5 flex items-center justify-center font-bold text-xs text-ink">${h.symbol}</div>
+            <div>
+              <p class="text-sm font-bold text-ink">${h.name}</p>
+              <p class="text-[10px] text-clay font-medium">${h.price}</p>
+            </div>
+          </div>
+          <div class="text-right">
+            <p class="font-mono text-sm font-bold ${h.positive ? 'text-positive' : 'text-negative'}">${h.return}</p>
+            <p class="text-[10px] text-ink/40 font-medium">${h.allocation} Alloc</p>
+          </div>
+        </div>
+        ${i < f.holdings.length - 1 ? '<div class="h-px bg-ink/5 mx-6"></div>' : ''}
+      `).join('');
+    }
+
+    function updateCopyStrategy() {
+      if (!selectedFund) return;
+      document.getElementById('cs-fund-name').textContent = selectedFund.fundName;
+      document.getElementById('cs-creator-name').textContent = selectedFund.creatorName;
+    }
+
+    function updateCopySuccess() {
+      if (!selectedFund) return;
+      document.getElementById('csuccess-fund-name').textContent = selectedFund.fundName;
+      document.getElementById('csuccess-creator-name').textContent = selectedFund.creatorName;
+    }
+
+    function goTo(screenId, options = {}) {
+      const { replace = false, animate = true } = options;
+
+      // Don't navigate to same screen
+      if (screenId === currentScreen) return;
+
+      const oldScreen = document.getElementById(currentScreen);
+      const newScreen = document.getElementById(screenId);
+
+      if (!newScreen) {
+        console.warn(`Screen "${screenId}" not found`);
+        return;
+      }
+
+      // Remove active from all screens
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+
+      // Add active to new screen
+      newScreen.classList.add('active');
+
+      // Update history
+      if (replace) {
+        navigationHistory[navigationHistory.length - 1] = screenId;
+      } else {
+        navigationHistory.push(screenId);
+      }
+
+      currentScreen = screenId;
+
+      // Scroll to top of new screen
+      const scrollable = newScreen.querySelector('main');
+      if (scrollable) scrollable.scrollTop = 0;
+    }
+
+    function goBack() {
+      if (navigationHistory.length > 1) {
+        navigationHistory.pop();
+        const previousScreen = navigationHistory[navigationHistory.length - 1];
+        goTo(previousScreen, { replace: true });
+      }
+    }
+
+    function simulateLogin() {
+      // Simulate loading then go to risk disclosure
+      goTo('risk');
+    }
+
+    function handleRetryConnection() {
+      const btn = document.getElementById('retryBtn');
+      const originalText = btn.textContent;
+      btn.innerHTML = '<span class="spinner"></span>';
+      btn.disabled = true;
+      btn.classList.add('opacity-70');
+
+      setTimeout(() => {
+        btn.textContent = originalText;
+        btn.disabled = false;
+        btn.classList.remove('opacity-70');
+        // Simulate success - go to home
+        goTo('home');
+      }, 1500);
+    }
+
+    function toggleRiskCheckbox() {
+      riskAccepted = !riskAccepted;
+      const box = document.getElementById('riskCheckboxBox');
+      const btn = document.getElementById('riskContinueBtn');
+
+      if (riskAccepted) {
+        box.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M11.6666 3.5L5.24992 9.91667L2.33325 7" stroke="#F3EFE8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>';
+        box.classList.add('bg-ink');
+        btn.disabled = false;
+        btn.classList.remove('text-clay/60', 'bg-ink/20', 'cursor-not-allowed');
+        btn.classList.add('text-paper', 'bg-ink', 'shadow-lg', 'cursor-pointer');
+      } else {
+        box.innerHTML = '';
+        box.classList.remove('bg-ink');
+        btn.disabled = true;
+        btn.classList.add('text-clay/60', 'bg-ink/20', 'cursor-not-allowed');
+        btn.classList.remove('text-paper', 'bg-ink', 'shadow-lg', 'cursor-pointer');
+      }
+    }
+
+    // Copy Strategy functions
+    let copyTradesEnabled = true;
+    let investmentAmount = 2500;
+    let stopLossPercent = 15;
+
+    function toggleCopyTrades() {
+      copyTradesEnabled = !copyTradesEnabled;
+      const toggle = document.getElementById('copyTradesToggle');
+      const knob = document.getElementById('copyTradesKnob');
+
+      if (copyTradesEnabled) {
+        toggle.classList.remove('bg-ink/30');
+        toggle.classList.add('bg-forest');
+        knob.classList.remove('ml-0');
+        knob.classList.add('ml-auto');
+      } else {
+        toggle.classList.add('bg-ink/30');
+        toggle.classList.remove('bg-forest');
+        knob.classList.add('ml-0');
+        knob.classList.remove('ml-auto');
+      }
+    }
+
+    function setStopLoss(percent) {
+      stopLossPercent = percent;
+      // Update button styles
+      document.querySelectorAll('.stop-loss-btn').forEach(btn => {
+        const btnValue = parseInt(btn.getAttribute('data-value'));
+        if (btnValue === percent) {
+          btn.classList.remove('border-ink/10', 'text-ink/60');
+          btn.classList.add('border-forest', 'bg-forest/5', 'text-forest');
+        } else {
+          btn.classList.add('border-ink/10', 'text-ink/60');
+          btn.classList.remove('border-forest', 'bg-forest/5', 'text-forest');
+        }
+      });
+    }
+
+    function toggleInvestmentEdit() {
+      const amounts = [1000, 2500, 5000, 10000, 25000];
+      const currentIndex = amounts.indexOf(investmentAmount);
+      investmentAmount = amounts[(currentIndex + 1) % amounts.length];
+      document.getElementById('investmentValue').textContent = '$' + investmentAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      updateStopLossDisplay();
+    }
+
+    function toggleStopLossEdit() {
+      const percentages = [5, 10, 15, 20, 25];
+      const currentIndex = percentages.indexOf(stopLossPercent);
+      stopLossPercent = percentages[(currentIndex + 1) % percentages.length];
+      updateStopLossDisplay();
+    }
+
+    function updateStopLossDisplay() {
+      const stopLossAmount = investmentAmount - (investmentAmount * stopLossPercent / 100);
+      document.getElementById('stopLossValue').textContent = stopLossPercent + '% ($' + stopLossAmount.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }) + ')';
+    }
+
+    function confirmCopyStrategy() {
+      goTo('copy-success');
+    }
+
+    // Swipe support
+    let touchStartX = 0;
+    let touchEndX = 0;
+    const mainScreens = ['home', 'discover', 'leaderboard', 'profile'];
+
+    document.getElementById('app').addEventListener('touchstart', e => {
+      touchStartX = e.changedTouches[0].screenX;
+    });
+
+    document.getElementById('app').addEventListener('touchend', e => {
+      touchEndX = e.changedTouches[0].screenX;
+      const currentScreen = document.querySelector('.screen.active').id;
+      if (mainScreens.includes(currentScreen)) {
+        const currentIndex = mainScreens.indexOf(currentScreen);
+        const threshold = 50;
+        if (touchEndX < touchStartX - threshold && currentIndex < mainScreens.length - 1) {
+          goTo(mainScreens[currentIndex + 1]);
+        }
+        if (touchEndX > touchStartX + threshold && currentIndex > 0) {
+          goTo(mainScreens[currentIndex - 1]);
+        }
+      }
+    });
+
+    // ===== PULL TO REFRESH =====
+    function initPullToRefresh(mainElementId, indicatorId) {
+      const main = document.getElementById(mainElementId);
+      const indicator = document.getElementById(indicatorId);
+      if (!main || !indicator) return;
+
+      let startY = 0;
+      let currentY = 0;
+      let isPulling = false;
+      let isRefreshing = false;
+      const threshold = 80;
+
+      main.addEventListener('touchstart', (e) => {
+        if (main.scrollTop === 0 && !isRefreshing) {
+          startY = e.touches[0].pageY;
+          isPulling = true;
+        }
+      }, { passive: true });
+
+      main.addEventListener('touchmove', (e) => {
+        if (!isPulling || isRefreshing) return;
+        currentY = e.touches[0].pageY;
+        const pullDistance = currentY - startY;
+
+        if (pullDistance > 0 && main.scrollTop === 0) {
+          const progress = Math.min(pullDistance / threshold, 1);
+          indicator.classList.add('visible');
+          indicator.style.transform = `translateX(-50%) translateY(${Math.min(pullDistance * 0.5, 40)}px)`;
+          indicator.querySelector('.pull-spinner').style.transform = `rotate(${progress * 180}deg)`;
+        }
+      }, { passive: true });
+
+      main.addEventListener('touchend', () => {
+        if (!isPulling) return;
+        isPulling = false;
+        const pullDistance = currentY - startY;
+
+        if (pullDistance > threshold && main.scrollTop === 0) {
+          // Trigger refresh
+          isRefreshing = true;
+          indicator.classList.add('refreshing');
+          indicator.style.transform = 'translateX(-50%) translateY(20px)';
+
+          // Simulate refresh
+          setTimeout(() => {
+            indicator.classList.remove('visible', 'refreshing');
+            indicator.style.transform = 'translateX(-50%) translateY(-60px)';
+            isRefreshing = false;
+          }, 1500);
+        } else {
+          // Cancel pull
+          indicator.classList.remove('visible');
+          indicator.style.transform = 'translateX(-50%) translateY(-60px)';
+        }
+
+        startY = 0;
+        currentY = 0;
+      });
+    }
+
+    // Initialize pull-to-refresh for Home screen
+    document.addEventListener('DOMContentLoaded', () => {
+      initPullToRefresh('home-main', 'home-pull-indicator');
+
+      // Splash screen animation
+      const splashLogo = document.getElementById('splash-logo');
+      const splashLoader = document.getElementById('splash-loader');
+
+      // Animate logo in
+      setTimeout(() => {
+        if (splashLogo) {
+          splashLogo.style.opacity = '1';
+          splashLogo.style.transform = 'translateY(0)';
+        }
+      }, 200);
+
+      // Show loader
+      setTimeout(() => {
+        if (splashLoader) {
+          splashLoader.style.opacity = '1';
+        }
+      }, 1000);
+
+      // Transition to welcome1 after 2.5 seconds
+      setTimeout(() => {
+        goTo('welcome1');
+      }, 2500);
+    });
+
+    // ===== DEMO FUNCTIONS =====
+    // Navigate to loading states for demo
+    function showLoadingState(screen) {
+      goTo(screen + '-loading');
+      setTimeout(() => goTo(screen), 2000);
+    }
+
+    function showEmptyState(screen) {
+      goTo('empty-' + screen);
+    }
+  </script>
+</body>
+</html>
