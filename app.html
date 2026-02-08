@@ -801,133 +801,153 @@
 
         <!-- ========== HOME ========== -->
         <div id="home" class="screen bg-transparent text-ink flex-col h-full w-full relative overflow-hidden">
-          <!-- Header -->
-          <header class="px-6 pt-16 pb-4 flex justify-between items-center z-20 flex-none">
-            <div class="flex items-center gap-3">
-              <div class="w-9 h-9 rounded-full border border-white/30 overflow-hidden glass">
-                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&h=100" alt="Profile" class="w-full h-full object-cover">
+          <!-- Top Section: Header & Equity -->
+          <div class="pt-14 px-6 pb-4">
+            <!-- Header -->
+            <div class="flex justify-between items-center mb-5">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full overflow-hidden border-2 border-forest/20">
+                  <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&h=100" alt="Profile" class="w-full h-full object-cover">
+                </div>
+                <div>
+                  <p class="text-[10px] text-ink/40 font-bold uppercase tracking-widest leading-none mb-1">Welcome back</p>
+                  <h1 class="font-fraunces text-lg font-semibold text-ink leading-none">Ahmed</h1>
+                </div>
               </div>
-              <div>
-                <p class="text-[10px] text-clay font-bold uppercase tracking-widest leading-none mb-1">Portfolio</p>
-                <h1 class="font-fraunces text-base font-semibold text-ink leading-none">Ahmed Al-Rashid</h1>
-              </div>
-            </div>
-            <div class="flex items-center gap-2">
-              <button class="w-9 h-9 flex items-center justify-center glass rounded-full"><i class="ph ph-magnifying-glass text-lg text-ink"></i></button>
-              <button class="w-9 h-9 flex items-center justify-center glass rounded-full relative">
+              <button class="w-10 h-10 flex items-center justify-center bg-white rounded-full border border-ink/5 relative">
                 <i class="ph ph-bell text-lg text-ink"></i>
-                <span class="absolute top-2.5 right-2.5 w-1.5 h-1.5 bg-negative rounded-full border border-paper"></span>
+                <span class="absolute top-2 right-2 w-2 h-2 bg-negative rounded-full border-2 border-white"></span>
               </button>
-            </div>
-          </header>
-
-          <!-- Main Content -->
-          <main id="home-main" class="flex-1 overflow-y-auto no-scrollbar pb-28 relative">
-            <!-- Pull to Refresh Indicator -->
-            <div id="home-pull-indicator" class="pull-indicator">
-              <div class="pull-spinner"></div>
             </div>
 
             <!-- Equity Card -->
-            <section class="px-6 mb-6">
-              <div class="bg-forest text-paper rounded-[2rem] p-6 relative overflow-hidden card-press">
-                <div class="relative z-10">
-                  <div class="flex justify-between items-start">
-                    <div>
-                      <span class="font-mono text-[10px] text-white/50 uppercase tracking-widest">Total Equity</span>
-                      <h2 class="font-fraunces text-[38px] font-medium tracking-tight mt-1 mb-2 leading-none">$47,283<span class="text-xl text-white/40">.52</span></h2>
-                      <div class="flex items-center gap-2">
-                        <span class="font-mono text-xs font-semibold text-positive">+$342.18</span>
-                        <span class="text-white/30 text-[10px] font-medium tracking-wide">TODAY</span>
-                      </div>
-                    </div>
-                    <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center"><i class="ph ph-dots-three-outline-fill text-white/60 text-sm"></i></div>
-                  </div>
-                  <div class="h-20 mt-4 mb-6">
-                    <svg class="w-full h-full" preserveAspectRatio="none" viewBox="0 0 400 80">
-                      <path d="M0,60 C50,60 80,45 120,50 C160,55 200,30 240,40 C280,50 320,25 400,35" fill="none" stroke="#C9A690" stroke-width="2" stroke-linecap="round"></path>
-                    </svg>
-                  </div>
-                  <div class="flex p-1 rounded-xl bg-white/10 max-w-sm mx-auto">
-                    <button class="flex-1 py-1.5 rounded-lg text-[10px] font-bold text-white/50">1D</button>
-                    <button class="flex-1 py-1.5 rounded-lg text-[10px] font-bold text-white/50">1W</button>
-                    <button class="flex-1 py-1.5 rounded-lg text-[10px] font-bold bg-white/20 text-white shadow-sm">1M</button>
-                    <button class="flex-1 py-1.5 rounded-lg text-[10px] font-bold text-white/50">3M</button>
-                    <button class="flex-1 py-1.5 rounded-lg text-[10px] font-bold text-white/50">ALL</button>
-                  </div>
+            <div class="bg-forest text-paper rounded-2xl p-5 relative overflow-hidden">
+              <div class="flex justify-between items-start mb-4">
+                <div>
+                  <p class="text-[10px] text-white/50 font-bold uppercase tracking-wider mb-1">Total Equity</p>
+                  <h2 class="font-fraunces text-[32px] font-semibold tracking-tight leading-none">$47,283<span class="text-lg text-white/40">.52</span></h2>
+                </div>
+                <div class="bg-positive/20 text-positive px-2.5 py-1 rounded-lg flex items-center gap-1">
+                  <i class="ph-fill ph-trend-up text-sm"></i>
+                  <span class="font-mono text-xs font-bold">+2.4%</span>
                 </div>
               </div>
-            </section>
+              <div class="flex items-center gap-2 text-white/60 text-xs">
+                <span class="font-mono text-positive font-semibold">+$342.18</span>
+                <span>today</span>
+              </div>
+            </div>
+          </div>
 
-            <!-- Active Strategies -->
-            <section class="mb-8">
-              <div class="flex justify-between items-center px-6 mb-4">
-                <h3 class="font-fraunces text-lg text-ink font-semibold">Active Strategies</h3>
-                <button class="text-[10px] font-bold text-clay uppercase tracking-wider">Manage</button>
+          <!-- Bottom Section: Strategies & Activity (full-bleed white) -->
+          <div class="flex-1 bg-white rounded-t-3xl overflow-hidden flex flex-col">
+            <div class="flex-1 overflow-y-auto no-scrollbar pb-28">
+              <!-- Active Strategies -->
+              <div class="px-6 pt-5 pb-3 flex justify-between items-center">
+                <h2 class="text-sm font-bold text-ink/40 uppercase tracking-wider">Active Strategies</h2>
+                <button class="text-xs font-semibold text-forest">Manage</button>
               </div>
-              <div class="space-y-3 px-6">
-                <div onclick="selectFund('momentum-stocks')" class="glass-card rounded-2xl p-4 flex flex-col cursor-pointer card-press">
-                  <div class="flex items-center gap-3 mb-3">
-                    <img src="images/stocktalk.jpg" class="w-8 h-8 rounded-full object-cover" alt="StockTalk">
-                    <div class="flex-1">
-                      <p class="font-inter font-bold text-ink text-sm">Momentum Stocks</p>
-                      <p class="text-[10px] text-clay/70">by StockTalk</p>
-                    </div>
-                  </div>
-                  <div class="grid grid-cols-2 gap-2">
-                    <div><p class="text-[8px] uppercase text-clay/60 font-bold mb-1">Return</p><p class="font-mono text-lg font-medium text-forest">+727%</p></div>
-                    <div><p class="text-[8px] uppercase text-clay/60 font-bold mb-1">PnL</p><p class="font-mono text-lg font-medium text-ink">+$18.4k</p></div>
-                  </div>
-                </div>
-                <div onclick="selectFund('tut-capital')" class="glass-card rounded-2xl p-4 flex flex-col cursor-pointer card-press">
-                  <div class="flex items-center gap-3 mb-3">
-                    <img src="images/tut.jpg" class="w-8 h-8 rounded-full object-cover" alt="KingTut">
-                    <div class="flex-1">
-                      <p class="font-inter font-bold text-ink text-sm">Tut Capital</p>
-                      <p class="text-[10px] text-clay/70">by KingTut</p>
-                    </div>
-                  </div>
-                  <div class="grid grid-cols-2 gap-2">
-                    <div><p class="text-[8px] uppercase text-clay/60 font-bold mb-1">Return</p><p class="font-mono text-lg font-medium text-forest">+112.5%</p></div>
-                    <div><p class="text-[8px] uppercase text-clay/60 font-bold mb-1">PnL</p><p class="font-mono text-lg font-medium text-ink">+$5.3k</p></div>
-                  </div>
-                </div>
-              </div>
-            </section>
 
-            <!-- Activity -->
-            <section class="px-6">
-              <h3 class="font-fraunces text-lg text-ink font-semibold mb-4">Recent Activity</h3>
-              <div class="space-y-3">
-                <div onclick="goTo('trade-detail')" class="glass-card p-3.5 rounded-xl flex items-center justify-between cursor-pointer card-press">
-                  <div class="flex items-center gap-3">
-                    <div class="w-2 h-2 rounded-full bg-forest"></div>
-                    <div>
-                      <p class="text-sm font-bold text-ink">AAPL <span class="font-normal text-ink/40 ml-1">Buy</span></p>
-                      <p class="text-[10px] text-clay font-medium">via Sarah Chen</p>
-                    </div>
-                  </div>
-                  <div class="text-right">
-                    <p class="font-mono text-xs font-bold text-ink">10 Units</p>
-                    <p class="text-[9px] text-clay/60 uppercase">14:32</p>
-                  </div>
+              <!-- Strategy 1 -->
+              <div onclick="selectFund('momentum-stocks')" class="px-6 py-4 flex items-center gap-4 cursor-pointer active:bg-ink/5 transition-all">
+                <img src="images/stocktalk.jpg" class="w-12 h-12 rounded-xl object-cover" alt="StockTalk">
+                <div class="flex-1 min-w-0">
+                  <h3 class="font-semibold text-ink text-[15px]">Momentum Stocks</h3>
+                  <p class="text-[12px] text-ink/50">by StockTalk</p>
                 </div>
-                <div onclick="goTo('trade-detail')" class="glass-card p-3.5 rounded-xl flex items-center justify-between cursor-pointer card-press">
-                  <div class="flex items-center gap-3">
-                    <div class="w-2 h-2 rounded-full bg-negative"></div>
-                    <div>
-                      <p class="text-sm font-bold text-ink">BTC <span class="font-normal text-ink/40 ml-1">Sell</span></p>
-                      <p class="text-[10px] text-clay font-medium">via Marcus Bell</p>
-                    </div>
-                  </div>
-                  <div class="text-right">
-                    <p class="font-mono text-xs font-bold text-ink">0.5 Units</p>
-                    <p class="text-[9px] text-clay/60 uppercase">12:15</p>
-                  </div>
+                <div class="text-right">
+                  <p class="font-mono text-sm font-bold text-positive">+727%</p>
+                  <p class="text-[11px] text-ink/40">+$18.4k</p>
                 </div>
               </div>
-            </section>
-          </main>
+
+              <div class="h-px bg-ink/5 mx-6"></div>
+
+              <!-- Strategy 2 -->
+              <div onclick="selectFund('tut-capital')" class="px-6 py-4 flex items-center gap-4 cursor-pointer active:bg-ink/5 transition-all">
+                <img src="images/tut.jpg" class="w-12 h-12 rounded-xl object-cover" alt="KingTut">
+                <div class="flex-1 min-w-0">
+                  <h3 class="font-semibold text-ink text-[15px]">Tut Capital</h3>
+                  <p class="text-[12px] text-ink/50">by KingTut</p>
+                </div>
+                <div class="text-right">
+                  <p class="font-mono text-sm font-bold text-positive">+112.5%</p>
+                  <p class="text-[11px] text-ink/40">+$5.3k</p>
+                </div>
+              </div>
+
+              <!-- Recent Activity -->
+              <div class="px-6 pt-6 pb-3">
+                <h2 class="text-sm font-bold text-ink/40 uppercase tracking-wider">Recent Activity</h2>
+              </div>
+
+              <!-- Activity 1 -->
+              <div class="px-6 py-3 flex items-center gap-4">
+                <div class="w-10 h-10 rounded-full bg-positive/10 flex items-center justify-center">
+                  <i class="ph-fill ph-arrow-up text-positive"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <h3 class="font-semibold text-ink text-sm">Bought NVDA</h3>
+                  <p class="text-[12px] text-ink/50">via Momentum Stocks</p>
+                </div>
+                <div class="text-right">
+                  <p class="font-mono text-sm font-semibold text-ink">5 shares</p>
+                  <p class="text-[11px] text-ink/40">2 min ago</p>
+                </div>
+              </div>
+
+              <div class="h-px bg-ink/5 mx-6"></div>
+
+              <!-- Activity 2 -->
+              <div class="px-6 py-3 flex items-center gap-4">
+                <div class="w-10 h-10 rounded-full bg-positive/10 flex items-center justify-center">
+                  <i class="ph-fill ph-arrow-up text-positive"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <h3 class="font-semibold text-ink text-sm">Bought ASTS</h3>
+                  <p class="text-[12px] text-ink/50">via Tut Capital</p>
+                </div>
+                <div class="text-right">
+                  <p class="font-mono text-sm font-semibold text-ink">50 shares</p>
+                  <p class="text-[11px] text-ink/40">1 hour ago</p>
+                </div>
+              </div>
+
+              <div class="h-px bg-ink/5 mx-6"></div>
+
+              <!-- Activity 3 -->
+              <div class="px-6 py-3 flex items-center gap-4">
+                <div class="w-10 h-10 rounded-full bg-negative/10 flex items-center justify-center">
+                  <i class="ph-fill ph-arrow-down text-negative"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <h3 class="font-semibold text-ink text-sm">Sold TSLA</h3>
+                  <p class="text-[12px] text-ink/50">via Momentum Stocks</p>
+                </div>
+                <div class="text-right">
+                  <p class="font-mono text-sm font-semibold text-ink">10 shares</p>
+                  <p class="text-[11px] text-ink/40">3 hours ago</p>
+                </div>
+              </div>
+
+              <div class="h-px bg-ink/5 mx-6"></div>
+
+              <!-- Activity 4 -->
+              <div class="px-6 py-3 flex items-center gap-4">
+                <div class="w-10 h-10 rounded-full bg-positive/10 flex items-center justify-center">
+                  <i class="ph-fill ph-arrow-up text-positive"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <h3 class="font-semibold text-ink text-sm">Bought JOBY</h3>
+                  <p class="text-[12px] text-ink/50">via Tut Capital</p>
+                </div>
+                <div class="text-right">
+                  <p class="font-mono text-sm font-semibold text-ink">100 shares</p>
+                  <p class="text-[11px] text-ink/40">Yesterday</p>
+                </div>
+              </div>
+            </div>
+          </div>
 
           <!-- Bottom Nav -->
           <nav class="absolute bottom-4 left-4 right-4 glass-strong rounded-[26px] flex justify-around py-2.5 z-50 shadow-lg">
