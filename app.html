@@ -87,6 +87,10 @@
       0% { transform: translateY(0) rotate(0deg); opacity: 1; }
       100% { transform: translateY(800px) rotate(720deg); opacity: 0; }
     }
+    @keyframes liquidShimmer {
+      0% { transform: translateX(-100%) skewX(-15deg); }
+      100% { transform: translateX(200%) skewX(-15deg); }
+    }
     .animate-bounce-in { animation: bounceIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
     .check-draw { stroke-dasharray: 100; stroke-dashoffset: 100; animation: drawCheck 0.4s ease-out 0.5s forwards; }
     .confetti { animation: confettiFall 3s linear infinite; }
@@ -208,20 +212,61 @@
       border: 1px solid rgba(255, 255, 255, 0.3);
     }
     .glass-strong {
+      /* True liquid glass - Revolut/iOS style */
       background: linear-gradient(
         135deg,
-        rgba(255, 255, 255, 0.45) 0%,
-        rgba(255, 255, 255, 0.2) 50%,
-        rgba(255, 255, 255, 0.35) 100%
+        rgba(255, 255, 255, 0.9) 0%,
+        rgba(255, 255, 255, 0.7) 50%,
+        rgba(255, 255, 255, 0.85) 100%
       );
-      backdrop-filter: blur(50px) saturate(180%) brightness(1.05);
-      -webkit-backdrop-filter: blur(50px) saturate(180%) brightness(1.05);
-      border: 1px solid rgba(255, 255, 255, 0.5);
+      backdrop-filter: blur(40px) saturate(180%);
+      -webkit-backdrop-filter: blur(40px) saturate(180%);
+      border: 0.5px solid rgba(255, 255, 255, 0.5);
       box-shadow:
-        0 10px 40px -10px rgba(0, 0, 0, 0.15),
-        0 0 0 0.5px rgba(255, 255, 255, 0.4),
-        inset 0 1px 1px rgba(255, 255, 255, 0.7),
-        inset 0 -1px 1px rgba(255, 255, 255, 0.2);
+        0 8px 32px rgba(0, 0, 0, 0.08),
+        0 2px 8px rgba(0, 0, 0, 0.04),
+        inset 0 1px 0 rgba(255, 255, 255, 1),
+        inset 0 -1px 0 rgba(255, 255, 255, 0.4);
+      position: relative;
+      overflow: hidden;
+    }
+    .glass-strong::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 50%;
+      height: 100%;
+      background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.4) 50%,
+        transparent 100%
+      );
+      pointer-events: none;
+      animation: liquidShimmer 8s ease-in-out infinite;
+      opacity: 0.6;
+    }
+
+    /* Nav button styles */
+    .nav-item {
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+    }
+    .nav-item:active {
+      transform: scale(0.92);
+    }
+    .nav-item:active > div:first-child {
+      background: rgba(13, 38, 31, 0.1);
+    }
+    .nav-item.active > div:first-child,
+    .nav-item > div:first-child.bg-ink {
+      transform: scale(1);
+      box-shadow: 0 4px 12px rgba(13, 38, 31, 0.2);
+    }
+    .nav-item:active > div:first-child.bg-ink {
+      background: #0D261F !important;
+      transform: scale(0.95);
     }
     .glass-card {
       background: rgba(255, 255, 255, 0.25);
@@ -790,7 +835,7 @@
                 <span class="font-mono text-[10px] font-bold tracking-[0.15em] text-clay uppercase mb-1">Account Balance</span>
                 <div class="flex items-start gap-1 font-fraunces text-ink mb-3">
                   <span class="text-[28px] mt-1.5 font-medium opacity-60">$</span>
-                  <span class="text-[48px] font-bold tracking-tight">12,450.00</span>
+                  <span class="text-[48px] font-bold tracking-tight">50,000.00</span>
                 </div>
                 <div class="inline-flex items-center gap-2 px-3 py-1.5 glass rounded-full">
                   <div class="w-1.5 h-1.5 rounded-full bg-forest animate-pulse"></div>
@@ -833,7 +878,7 @@
             <!-- Big Balance -->
             <div class="text-center">
               <p class="text-white/50 text-xs font-medium mb-2">Total Portfolio Value</p>
-              <h2 class="font-fraunces text-[44px] font-semibold text-white tracking-tight leading-none mb-3">$47,283</h2>
+              <h2 class="font-fraunces text-[44px] font-semibold text-white tracking-tight leading-none mb-3">$50,000</h2>
               <div class="inline-flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full">
                 <i class="ph-fill ph-trend-up text-positive"></i>
                 <span class="font-mono text-sm font-semibold text-positive">+$342.18</span>
@@ -1371,7 +1416,7 @@
                     inputmode="decimal"
                   >
                 </div>
-                <p class="text-xs text-ink/40 mt-2">Available balance: $12,450.00</p>
+                <p class="text-xs text-ink/40 mt-2">Available balance: $50,000.00</p>
               </div>
 
               <!-- Stop Loss -->
