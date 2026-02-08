@@ -3001,6 +3001,16 @@
       }
     };
 
+    // Preload all fund images on page load
+    function preloadFundImages() {
+      Object.values(funds).forEach(fund => {
+        const img = new Image();
+        img.src = fund.image;
+      });
+    }
+    // Run preload when page loads
+    window.addEventListener('load', preloadFundImages);
+
     // Function to select a fund and update screens
     function selectFund(fundId) {
       selectedFund = funds[fundId];
