@@ -1,24 +1,22 @@
-# In copilot-landing repo: .github/workflows/sync-deck.yml
 name: Sync Deck from Lovable
 on:
   repository_dispatch:
     types: [deck-updated]
-  workflow_dispatch:  # Manual trigger
+  workflow_dispatch:
 
 jobs:
   sync:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-              with:
-                        token: ${{ secrets.DECK_REPO_PAT }}
+        with:
+          token: ${{ secrets.DECK_REPO_PAT }}
       - uses: actions/checkout@v4
         with:
           repository: zizonchain/dopl-spotlight-scan
           path: deck-source
           token: ${{ secrets.DECK_REPO_PAT }}
 
-      
       - name: Build deck
         run: |
           cd deck-source
