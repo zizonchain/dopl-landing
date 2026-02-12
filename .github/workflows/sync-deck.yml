@@ -20,7 +20,7 @@ jobs:
       - name: Build deck
         run: |
           cd deck-source
-          npm ci
+          npm install
           VITE_BASE=/deck/ npm run build
           
       - name: Copy to public
