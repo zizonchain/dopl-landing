@@ -26,7 +26,8 @@ jobs:
       - name: Copy to public
         run: |
           rm -rf public/deck
-          cp -r deck-source/dist public/deck
+          mkdir -p public/deck
+          cp -r deck-source/dist/* public/deck/
           
       - name: Commit & Push
         run: |
