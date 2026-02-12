@@ -23,16 +23,16 @@ jobs:
           npm install
           VITE_BASE=/deck/ npm run build
           
-      - name: Copy to public
+      - name: Copy to deck folder
         run: |
-          rm -rf public/deck
-          mkdir -p public/deck
-          cp -r deck-source/dist/* public/deck/
+          rm -rf deck
+          mkdir -p deck
+          cp -r deck-source/dist/* deck/
           
       - name: Commit & Push
         run: |
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
-          git add public/deck
+          git add deck
           git commit -m "Sync deck from Lovable" || exit 0
           git push
