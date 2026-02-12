@@ -1,0 +1,36 @@
+# In copilot-landing repo: .github/workflows/sync-deck.yml
+name: Sync Deck from Lovable
+on:
+  repository_dispatch:
+    types: [deck-updated]
+  workflow_dispatch:  # Manual trigger
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: zizonchain/dopl-spotlight-scan
+          path: deck-source
+          token: ${{ secrets.GH_PAT }}
+      
+      - name: Build deck
+        run: |
+          cd deck-source
+          npm ci
+          VITE_BASE=/deck/ npm run build
+          
+      - name: Copy to public
+        run: |
+          rm -rf public/deck
+          cp -r deck-source/dist public/deck
+          
+      - name: Commit & Push
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add public/deck
+          git commit -m "Sync deck from Lovable" || exit 0
+          git push
