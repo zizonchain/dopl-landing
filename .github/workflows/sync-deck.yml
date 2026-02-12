@@ -10,6 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+              with:
+                        token: ${{ secrets.DECK_REPO_PAT }}
       - uses: actions/checkout@v4
         with:
           repository: zizonchain/dopl-spotlight-scan
