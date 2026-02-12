@@ -14,7 +14,8 @@ jobs:
         with:
           repository: zizonchain/dopl-spotlight-scan
           path: deck-source
-          token: ${{ secrets.GH_PAT }}
+          token: ${{ secrets.DECK_REPO_PAT }}
+
       
       - name: Build deck
         run: |
