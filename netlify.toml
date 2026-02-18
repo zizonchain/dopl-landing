@@ -1,5 +1,5 @@
 [[redirects]]
     from = "/app/*"
-    to = "https://dopl-app.netlify.app/:splat"
+    to = "https://dopl-app.netlify.app/app/:splat"
     status = 200
     force = true
