@@ -131,7 +131,7 @@ function initHeroCardRotation() {
       name: 'Warren Buffett',
       tag: 'Berkshire Hathaway',
       avatar: 'images/buffett.jpg',
-      copiers: '2783 copiers',
+      doplers: '2783 doplers',
       return: '+89.8%',
       holdings: [
         { ticker: 'AAPL', return: '+24.8%' },
@@ -143,7 +143,7 @@ function initHeroCardRotation() {
       name: 'Nancy Pelosi',
       tag: 'U.S. Congress',
       avatar: 'images/Nancy.webp',
-      copiers: '4399 copiers',
+      doplers: '4399 doplers',
       return: '+132%',
       holdings: [
         { ticker: 'MRVL', return: '+67.2%' },
@@ -155,7 +155,7 @@ function initHeroCardRotation() {
       name: 'StockTalk',
       tag: 'Top Analyst',
       avatar: 'images/stocktalk.jpg',
-      copiers: '804 copiers',
+      doplers: '804 doplers',
       return: '+727%',
       holdings: [
         { ticker: 'AVGO', return: '+156%' },
@@ -167,7 +167,7 @@ function initHeroCardRotation() {
       name: 'Michael Burry',
       tag: 'Scion Asset Management',
       avatar: 'images/Burry.webp',
-      copiers: '1298 copiers',
+      doplers: '1298 doplers',
       return: '+344%',
       holdings: [
         { ticker: 'PLTR', return: '+89.4%' },
@@ -182,7 +182,7 @@ function initHeroCardRotation() {
   const avatar = document.getElementById('card-avatar');
   const name = document.getElementById('card-name');
   const tag = document.getElementById('card-tag');
-  const copiers = document.getElementById('card-copiers');
+  const doplers = document.getElementById('card-doplers');
   const returnBadge = document.getElementById('card-return');
   const holdings = document.getElementById('card-holdings');
 
@@ -206,7 +206,7 @@ function initHeroCardRotation() {
       avatar.alt = investor.name;
       name.textContent = investor.name;
       tag.textContent = investor.tag;
-      copiers.textContent = investor.copiers;
+      doplers.textContent = investor.doplers;
       returnBadge.textContent = investor.return;
 
       // Update holdings
